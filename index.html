@@ -1,0 +1,609 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#portal{display:flex;min-height:780px;background:var(--color-background-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;border:0.5px solid var(--color-border-tertiary);font-family:var(--font-sans);font-size:13px}
+#sidebar{width:210px;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;flex-shrink:0}
+.brand{padding:16px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.brand-logo{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.brand-mark{width:24px;height:24px;border-radius:6px;background:var(--color-background-info);display:flex;align-items:center;justify-content:center}
+.brand-mark svg{width:13px;height:13px}
+.brand-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.brand-tagline{font-size:10px;color:var(--color-text-tertiary)}
+.role-switcher{padding:10px 12px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.role-label{font-size:10px;color:var(--color-text-tertiary);margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase}
+.role-tabs{display:flex;gap:3px}
+.role-tab{flex:1;text-align:center;padding:4px 0;font-size:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;color:var(--color-text-secondary);background:transparent;transition:all 0.15s}
+.role-tab.active{background:var(--color-background-info);border-color:transparent;color:var(--color-text-info);font-weight:500}
+.nav-group{padding:10px 0 2px}
+.nav-group-label{font-size:10px;color:var(--color-text-tertiary);padding:0 12px 5px;letter-spacing:0.06em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 12px;color:var(--color-text-secondary);cursor:pointer;transition:background 0.12s;font-size:12px}
+.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.nav-item.active{background:var(--color-background-info);color:var(--color-text-info);font-weight:500}
+.nav-icon{width:14px;height:14px;flex-shrink:0;opacity:0.75}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;font-size:10px;padding:1px 5px;border-radius:999px;font-weight:500}
+.nb-red{background:var(--color-background-danger);color:var(--color-text-danger)}
+.nb-blue{background:var(--color-background-info);color:var(--color-text-info)}
+.sidebar-user{margin-top:auto;padding:12px;border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:8px}
+.uav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.uav-hr{background:var(--color-background-info);color:var(--color-text-info)}
+.uav-mgr{background:var(--color-background-success);color:var(--color-text-success)}
+.uav-int{background:var(--color-background-warning);color:var(--color-text-warning)}
+.uname{font-size:11px;font-weight:500;color:var(--color-text-primary)}
+.urole{font-size:10px;color:var(--color-text-secondary)}
+
+#main{flex:1;display:flex;flex-direction:column;min-width:0}
+#topbar{height:52px;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;padding:0 18px;gap:10px}
+#page-title{font-size:14px;font-weight:500;color:var(--color-text-primary);flex:1}
+.tbtn{padding:5px 12px;font-size:11px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer}
+.tbtn.pri{background:var(--color-background-info);border-color:transparent;color:var(--color-text-info);font-weight:500}
+#body{flex:1;padding:16px;overflow-y:auto}
+
+.sec{display:none}.sec.on{display:block}
+
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.metrics-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px}
+.mc-lbl{font-size:11px;color:var(--color-text-secondary);margin-bottom:5px}
+.mc-val{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.mc-sub{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.good{color:var(--color-text-success)}.warn{color:var(--color-text-warning)}.info{color:var(--color-text-info)}
+
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:12px}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ct{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.ca{font-size:11px;color:var(--color-text-info);cursor:pointer}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:10px;color:var(--color-text-secondary);padding:0 8px 8px 0;font-weight:400;border-bottom:0.5px solid var(--color-border-tertiary);white-space:nowrap}
+td{padding:9px 8px 9px 0;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle;color:var(--color-text-primary)}
+tr:last-child td{border-bottom:none}
+
+.pill{display:inline-block;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:500;white-space:nowrap}
+.pg{background:var(--color-background-success);color:var(--color-text-success)}
+.pa{background:var(--color-background-warning);color:var(--color-text-warning)}
+.pb{background:var(--color-background-info);color:var(--color-text-info)}
+.pr{background:var(--color-background-danger);color:var(--color-text-danger)}
+.pgy{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.ab{background:var(--color-background-info);color:var(--color-text-info)}
+.at{background:var(--color-background-success);color:var(--color-text-success)}
+.aw{background:var(--color-background-warning);color:var(--color-text-warning)}
+.ar{background:var(--color-background-danger);color:var(--color-text-danger)}
+.fr{display:flex;align-items:center;gap:7px}
+
+.pw{background:var(--color-background-secondary);border-radius:999px;height:4px;flex:1;min-width:50px}
+.pb2{height:4px;border-radius:999px;background:var(--color-text-info)}
+.pb-warn{background:var(--color-text-warning)}
+
+.tl{padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;gap:10px}
+.tl:last-child{border-bottom:none}
+.tld{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.tlb{background:var(--color-text-info)}.tlg{background:var(--color-text-success)}.tla{background:var(--color-text-warning)}
+.tlt{font-size:12px;color:var(--color-text-primary);line-height:1.5}
+.tls{font-size:10px;color:var(--color-text-tertiary);margin-top:1px}
+
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+
+.search-row{display:flex;gap:6px;margin-bottom:12px}
+.search-row input{flex:1;padding:6px 10px;font-size:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans)}
+.flt{padding:5px 10px;font-size:11px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.flt.on{background:var(--color-background-info);border-color:transparent;color:var(--color-text-info)}
+
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.icard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;text-align:center}
+.icard .av{width:38px;height:38px;font-size:13px;margin:0 auto 8px}
+.ic-name{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.ic-dept{font-size:10px;color:var(--color-text-secondary);margin-bottom:8px}
+.ic-prog{width:100%;margin-bottom:4px}
+.ic-pct{font-size:10px;color:var(--color-text-secondary)}
+
+.kb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.kb-col-hd{font-size:11px;font-weight:500;color:var(--color-text-secondary);padding-bottom:8px;margin-bottom:8px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:5px}
+.kb-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px;margin-bottom:7px}
+.kb-name{font-size:11px;font-weight:500;color:var(--color-text-primary)}
+.kb-meta{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+
+.onb-steps{display:flex;gap:0;margin-bottom:16px}
+.onb-step{flex:1;text-align:center;padding:10px 6px;position:relative}
+.onb-step:not(:last-child)::after{content:'';position:absolute;right:0;top:50%;width:1px;height:50%;background:var(--color-border-tertiary);transform:translateY(-50%)}
+.onb-num{width:22px;height:22px;border-radius:50%;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.onb-done .onb-num{background:var(--color-background-success);color:var(--color-text-success)}
+.onb-active .onb-num{background:var(--color-background-info);color:var(--color-text-info)}
+.onb-pending .onb-num{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.onb-lbl{font-size:10px;color:var(--color-text-secondary)}
+.onb-active .onb-lbl{color:var(--color-text-info);font-weight:500}
+
+.my-tasks .task-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.my-tasks .task-row:last-child{border-bottom:none}
+.task-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--color-border-secondary);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.task-check.done{background:var(--color-background-success);border-color:transparent}
+.task-name{flex:1;font-size:12px;color:var(--color-text-primary)}
+.task-name.done{color:var(--color-text-secondary);text-decoration:line-through}
+.task-due{font-size:10px;color:var(--color-text-secondary);white-space:nowrap}
+
+.att-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.att-day-hd{text-align:center;font-size:10px;color:var(--color-text-secondary);padding-bottom:4px}
+.att-cell{aspect-ratio:1;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;cursor:default}
+.att-p{background:var(--color-background-success);color:var(--color-text-success)}
+.att-a{background:var(--color-background-danger);color:var(--color-text-danger)}
+.att-l{background:var(--color-background-warning);color:var(--color-text-warning)}
+.att-off{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.att-future{background:transparent;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-tertiary)}
+
+.week-strip{display:flex;gap:6px;margin-bottom:14px}
+.week-chip{flex:1;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 4px;text-align:center}
+.wc-day{font-size:10px;color:var(--color-text-secondary)}
+.wc-date{font-size:13px;font-weight:500;color:var(--color-text-primary);margin:2px 0}
+.wc-status{font-size:10px}
+.wcs-p{color:var(--color-text-success)}.wcs-a{color:var(--color-text-danger)}.wcs-l{color:var(--color-text-warning)}.wcs-f{color:var(--color-text-tertiary)}
+
+input[type=text],input[type=email],select,textarea{width:100%;padding:7px 9px;font-size:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans)}
+textarea{resize:vertical;min-height:60px}
+.fg{margin-bottom:10px}
+.fl{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;display:block}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bsub{padding:7px 16px;background:var(--color-background-info);color:var(--color-text-info);border:none;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-sans)}
+</style>
+
+<div id="portal">
+<div id="sidebar">
+  <div class="brand">
+    <div class="brand-logo">
+      <div class="brand-mark">
+        <svg viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="5" height="5" rx="1" fill="var(--color-text-info)"/><rect x="7" y="1" width="5" height="5" rx="1" fill="var(--color-text-info)" opacity=".5"/><rect x="1" y="7" width="5" height="5" rx="1" fill="var(--color-text-info)" opacity=".5"/><rect x="7" y="7" width="5" height="5" rx="1" fill="var(--color-text-info)" opacity=".3"/></svg>
+      </div>
+      <span class="brand-name">InternHub</span>
+    </div>
+    <div class="brand-tagline">Internship Management Portal</div>
+  </div>
+
+  <div class="role-switcher">
+    <div class="role-label">Viewing as</div>
+    <div class="role-tabs">
+      <div class="role-tab active" onclick="switchRole('hr',this)">HR</div>
+      <div class="role-tab" onclick="switchRole('manager',this)">Manager</div>
+      <div class="role-tab" onclick="switchRole('intern',this)">Intern</div>
+    </div>
+  </div>
+
+  <div id="nav-hr">
+    <div class="nav-group">
+      <div class="nav-group-label">Overview</div>
+      <div class="nav-item active" onclick="nav('dashboard',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/></svg>
+        Dashboard
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Recruitment</div>
+      <div class="nav-item" onclick="nav('applications',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M2 2h10v1.5H2zm0 3h10v1.5H2zm0 3h7v1.5H2z"/></svg>
+        Applications
+        <span class="nav-badge nb-red">7</span>
+      </div>
+      <div class="nav-item" onclick="nav('pipeline',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><circle cx="2.5" cy="7" r="1.8"/><circle cx="7" cy="7" r="1.8"/><circle cx="11.5" cy="7" r="1.8"/><line x1="4.3" y1="7" x2="5.2" y2="7" stroke="currentColor" stroke-width="1.2"/><line x1="8.8" y1="7" x2="9.7" y2="7" stroke="currentColor" stroke-width="1.2"/></svg>
+        Hiring pipeline
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Interns</div>
+      <div class="nav-item" onclick="nav('interns',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+        Intern profiles
+      </div>
+      <div class="nav-item" onclick="nav('onboarding',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+        Onboarding
+        <span class="nav-badge nb-blue">3</span>
+      </div>
+      <div class="nav-item" onclick="nav('attendance',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="2.5" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v3M10 1v3M1 6h12" stroke="currentColor" stroke-width="1.2"/></svg>
+        Attendance
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Work</div>
+      <div class="nav-item" onclick="nav('tasks',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M2 3h10M2 7h10M2 11h6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+        Tasks &amp; projects
+        <span class="nav-badge nb-red">5</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="nav-manager" style="display:none">
+    <div class="nav-group">
+      <div class="nav-group-label">My team</div>
+      <div class="nav-item active" onclick="nav('dashboard',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/></svg>
+        Overview
+      </div>
+      <div class="nav-item" onclick="nav('interns',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+        My interns
+      </div>
+      <div class="nav-item" onclick="nav('tasks',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M2 3h10M2 7h10M2 11h6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+        Assign tasks
+        <span class="nav-badge nb-red">2</span>
+      </div>
+      <div class="nav-item" onclick="nav('attendance',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="2.5" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v3M10 1v3M1 6h12" stroke="currentColor" stroke-width="1.2"/></svg>
+        Attendance
+      </div>
+    </div>
+  </div>
+
+  <div id="nav-intern" style="display:none">
+    <div class="nav-group">
+      <div class="nav-group-label">My portal</div>
+      <div class="nav-item active" onclick="nav('intern-home',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/></svg>
+        Home
+      </div>
+      <div class="nav-item" onclick="nav('intern-tasks',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M2 3h10M2 7h10M2 11h6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+        My tasks
+        <span class="nav-badge nb-blue">4</span>
+      </div>
+      <div class="nav-item" onclick="nav('intern-attendance',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="2.5" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v3M10 1v3M1 6h12" stroke="currentColor" stroke-width="1.2"/></svg>
+        My attendance
+      </div>
+      <div class="nav-item" onclick="nav('intern-onboarding',this)">
+        <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+        Onboarding
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-user" id="su-hr">
+    <div class="uav uav-hr">SA</div>
+    <div><div class="uname">Sarah Adeyemi</div><div class="urole">HR Manager</div></div>
+  </div>
+  <div class="sidebar-user" id="su-manager" style="display:none">
+    <div class="uav uav-mgr">TK</div>
+    <div><div class="uname">Tobi Kolade</div><div class="urole">Eng. Manager</div></div>
+  </div>
+  <div class="sidebar-user" id="su-intern" style="display:none">
+    <div class="uav uav-int">CE</div>
+    <div><div class="uname">Chidi Eze</div><div class="urole">Software Intern</div></div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="topbar">
+    <div id="page-title">Dashboard</div>
+    <button class="tbtn">Export</button>
+    <button class="tbtn pri" id="primary-cta">+ New application</button>
+  </div>
+  <div id="body">
+
+    <!-- HR DASHBOARD -->
+    <div id="sec-dashboard" class="sec on">
+      <div class="metrics">
+        <div class="mc"><div class="mc-lbl">Active interns</div><div class="mc-val">24</div><div class="mc-sub good">+3 this month</div></div>
+        <div class="mc"><div class="mc-lbl">Open applications</div><div class="mc-val">7</div><div class="mc-sub warn">2 pending review</div></div>
+        <div class="mc"><div class="mc-lbl">Avg task progress</div><div class="mc-val">68%</div><div class="mc-sub">across all teams</div></div>
+        <div class="mc"><div class="mc-lbl">Ending this month</div><div class="mc-val">5</div><div class="mc-sub warn">offboarding due</div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><span class="ct">Recent applications</span><span class="ca" onclick="nav('applications',null)">view all</span></div>
+          <table>
+            <tr><th>Applicant</th><th>Role</th><th>Stage</th></tr>
+            <tr><td><div class="fr"><div class="av aw">FA</div>Fatima Abubakar</div></td><td style="color:var(--color-text-secondary)">Marketing</td><td><span class="pill pgy">Applied</span></td></tr>
+            <tr><td><div class="fr"><div class="av ab">AO</div>Amara Okafor</div></td><td style="color:var(--color-text-secondary)">Engineering</td><td><span class="pill pa">Review</span></td></tr>
+            <tr><td><div class="fr"><div class="av at">KI</div>Kemi Ige</div></td><td style="color:var(--color-text-secondary)">Design</td><td><span class="pill pb">Interview</span></td></tr>
+            <tr><td><div class="fr"><div class="av ar">TN</div>Tunde Nwosu</div></td><td style="color:var(--color-text-secondary)">Data</td><td><span class="pill pg">Offer sent</span></td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ct">Activity</span></div>
+          <div class="tl"><div class="tld tlg"></div><div><div class="tlt">Tunde Nwosu accepted the data analyst offer.</div><div class="tls">2 hours ago</div></div></div>
+          <div class="tl"><div class="tld tlb"></div><div><div class="tlt">Kemi Ige interview scheduled for Friday.</div><div class="tls">5 hours ago</div></div></div>
+          <div class="tl"><div class="tld tla"></div><div><div class="tlt">3 tasks overdue in Product Design.</div><div class="tls">Yesterday</div></div></div>
+          <div class="tl"><div class="tld tlg"></div><div><div class="tlt">Chidi Eze completed onboarding.</div><div class="tls">2 days ago</div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct">Intern progress</span><span class="ca" onclick="nav('interns',null)">view all</span></div>
+        <table>
+          <tr><th>Name</th><th>Department</th><th>Duration</th><th>Progress</th><th>Status</th></tr>
+          <tr><td><div class="fr"><div class="av ab">CE</div>Chidi Eze</div></td><td style="color:var(--color-text-secondary)">Engineering</td><td style="color:var(--color-text-secondary)">Jan 6 – Mar 28</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:82%"></div></div><span style="font-size:10px;color:var(--color-text-secondary)">82%</span></div></td><td><span class="pill pg">On track</span></td></tr>
+          <tr><td><div class="fr"><div class="av aw">ZB</div>Zara Bello</div></td><td style="color:var(--color-text-secondary)">Design</td><td style="color:var(--color-text-secondary)">Jan 13 – Apr 4</td><td><div class="fr"><div class="pw"><div class="pb2 pb-warn" style="width:54%"></div></div><span style="font-size:10px;color:var(--color-text-secondary)">54%</span></div></td><td><span class="pill pa">Behind</span></td></tr>
+          <tr><td><div class="fr"><div class="av at">NM</div>Ngozi Musa</div></td><td style="color:var(--color-text-secondary)">Marketing</td><td style="color:var(--color-text-secondary)">Feb 3 – Apr 25</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:67%"></div></div><span style="font-size:10px;color:var(--color-text-secondary)">67%</span></div></td><td><span class="pill pg">On track</span></td></tr>
+          <tr><td><div class="fr"><div class="av ar">OA</div>Oluwaseun Adegoke</div></td><td style="color:var(--color-text-secondary)">Data</td><td style="color:var(--color-text-secondary)">Jan 20 – Mar 21</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:91%"></div></div><span style="font-size:10px;color:var(--color-text-secondary)">91%</span></div></td><td><span class="pill pb">Completing</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- APPLICATIONS -->
+    <div id="sec-applications" class="sec">
+      <div class="search-row">
+        <input type="text" placeholder="Search applicants...">
+        <button class="flt on">All</button><button class="flt">Review</button><button class="flt">Interview</button><button class="flt">Offer</button>
+      </div>
+      <div class="card">
+        <table>
+          <tr><th>Applicant</th><th>Role</th><th>Applied</th><th>Stage</th><th>Action</th></tr>
+          <tr><td><div class="fr"><div class="av aw">FA</div><div><div>Fatima Abubakar</div><div style="font-size:10px;color:var(--color-text-secondary)">fatima@email.com</div></div></div></td><td>Marketing intern</td><td style="color:var(--color-text-secondary)">Mar 17</td><td><span class="pill pgy">Applied</span></td><td><button class="tbtn">Review</button></td></tr>
+          <tr><td><div class="fr"><div class="av ab">AO</div><div><div>Amara Okafor</div><div style="font-size:10px;color:var(--color-text-secondary)">amara@email.com</div></div></div></td><td>Software eng. intern</td><td style="color:var(--color-text-secondary)">Mar 15</td><td><span class="pill pa">Under review</span></td><td><button class="tbtn">Move to interview</button></td></tr>
+          <tr><td><div class="fr"><div class="av at">KI</div><div><div>Kemi Ige</div><div style="font-size:10px;color:var(--color-text-secondary)">kemi@email.com</div></div></div></td><td>UX design intern</td><td style="color:var(--color-text-secondary)">Mar 12</td><td><span class="pill pb">Interview</span></td><td><button class="tbtn">Send offer</button></td></tr>
+          <tr><td><div class="fr"><div class="av ar">TN</div><div><div>Tunde Nwosu</div><div style="font-size:10px;color:var(--color-text-secondary)">tunde@email.com</div></div></div></td><td>Data analyst intern</td><td style="color:var(--color-text-secondary)">Mar 8</td><td><span class="pill pg">Offer sent</span></td><td><button class="tbtn">Awaiting response</button></td></tr>
+          <tr><td><div class="fr"><div class="av ab">SB</div><div><div>Samuel Bright</div><div style="font-size:10px;color:var(--color-text-secondary)">sam@email.com</div></div></div></td><td>Backend eng. intern</td><td style="color:var(--color-text-secondary)">Mar 5</td><td><span class="pill pg">Accepted</span></td><td><button class="tbtn pri">Onboard</button></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div id="sec-pipeline" class="sec">
+      <div class="kb">
+        <div>
+          <div class="kb-col-hd">Applied <span class="pill pgy">4</span></div>
+          <div class="kb-card"><div class="kb-name">Fatima Abubakar</div><div class="kb-meta">Marketing · Mar 17</div></div>
+          <div class="kb-card"><div class="kb-name">Lara Ojo</div><div class="kb-meta">Design · Mar 16</div></div>
+          <div class="kb-card"><div class="kb-name">Emeka Nze</div><div class="kb-meta">Engineering · Mar 14</div></div>
+        </div>
+        <div>
+          <div class="kb-col-hd">Under review <span class="pill pa">2</span></div>
+          <div class="kb-card"><div class="kb-name">Amara Okafor</div><div class="kb-meta">Engineering · Mar 15</div></div>
+          <div class="kb-card"><div class="kb-name">Bisi Adewale</div><div class="kb-meta">Data · Mar 10</div></div>
+        </div>
+        <div>
+          <div class="kb-col-hd">Interview <span class="pill pb">1</span></div>
+          <div class="kb-card"><div class="kb-name">Kemi Ige</div><div class="kb-meta">Design · Fri Mar 21</div></div>
+        </div>
+        <div>
+          <div class="kb-col-hd">Offer <span class="pill pg">2</span></div>
+          <div class="kb-card"><div class="kb-name">Tunde Nwosu</div><div class="kb-meta">Data · Offer sent</div></div>
+          <div class="kb-card"><div class="kb-name">Samuel Bright</div><div class="kb-meta">Engineering · Accepted</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERNS -->
+    <div id="sec-interns" class="sec">
+      <div class="search-row">
+        <input type="text" placeholder="Search interns...">
+        <button class="flt on">All</button><button class="flt">Engineering</button><button class="flt">Design</button><button class="flt">Data</button>
+      </div>
+      <div class="igrid">
+        <div class="icard"><div class="av ab">CE</div><div class="ic-name">Chidi Eze</div><div class="ic-dept">Backend Engineering</div><div class="pw ic-prog"><div class="pb2" style="width:82%"></div></div><div class="ic-pct">82% · ends Mar 28</div><div style="margin-top:6px"><span class="pill pg">On track</span></div></div>
+        <div class="icard"><div class="av aw">ZB</div><div class="ic-name">Zara Bello</div><div class="ic-dept">Product Design</div><div class="pw ic-prog"><div class="pb2 pb-warn" style="width:54%"></div></div><div class="ic-pct">54% · ends Apr 4</div><div style="margin-top:6px"><span class="pill pa">Behind</span></div></div>
+        <div class="icard"><div class="av at">NM</div><div class="ic-name">Ngozi Musa</div><div class="ic-dept">Marketing</div><div class="pw ic-prog"><div class="pb2" style="width:67%"></div></div><div class="ic-pct">67% · ends Apr 25</div><div style="margin-top:6px"><span class="pill pg">On track</span></div></div>
+        <div class="icard"><div class="av ar">OA</div><div class="ic-name">Oluwaseun Adegoke</div><div class="ic-dept">Data Analytics</div><div class="pw ic-prog"><div class="pb2" style="width:91%"></div></div><div class="ic-pct">91% · ends Mar 21</div><div style="margin-top:6px"><span class="pill pb">Completing</span></div></div>
+        <div class="icard"><div class="av ab">IW</div><div class="ic-name">Ibrahim Wale</div><div class="ic-dept">Frontend Eng.</div><div class="pw ic-prog"><div class="pb2 pb-warn" style="width:45%"></div></div><div class="ic-pct">45% · ends May 2</div><div style="margin-top:6px"><span class="pill pa">Behind</span></div></div>
+        <div class="icard"><div class="av at">AP</div><div class="ic-name">Ada Peters</div><div class="ic-dept">Product Mgmt</div><div class="pw ic-prog"><div class="pb2" style="width:72%"></div></div><div class="ic-pct">72% · ends Apr 18</div><div style="margin-top:6px"><span class="pill pg">On track</span></div></div>
+      </div>
+    </div>
+
+    <!-- ONBOARDING -->
+    <div id="sec-onboarding" class="sec">
+      <div class="card" style="margin-bottom:12px">
+        <div class="ch"><span class="ct">Samuel Bright — onboarding in progress</span><span class="pill pb">Step 3 of 5</span></div>
+        <div class="onb-steps">
+          <div class="onb-step onb-done"><div class="onb-num">1</div><div class="onb-lbl">Offer signed</div></div>
+          <div class="onb-step onb-done"><div class="onb-num">2</div><div class="onb-lbl">Documents</div></div>
+          <div class="onb-step onb-active"><div class="onb-num">3</div><div class="onb-lbl">IT setup</div></div>
+          <div class="onb-step onb-pending"><div class="onb-num">4</div><div class="onb-lbl">Orientation</div></div>
+          <div class="onb-step onb-pending"><div class="onb-num">5</div><div class="onb-lbl">First day</div></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end"><button class="tbtn">Mark complete</button><button class="tbtn pri">Send IT setup instructions</button></div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct">All onboarding</span></div>
+        <table>
+          <tr><th>Intern</th><th>Role</th><th>Start date</th><th>Progress</th><th>Status</th></tr>
+          <tr><td><div class="fr"><div class="av ab">SB</div>Samuel Bright</div></td><td style="color:var(--color-text-secondary)">Backend Eng.</td><td style="color:var(--color-text-secondary)">Mar 24</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:60%"></div></div><span style="font-size:10px;color:var(--color-text-secondary)">3/5</span></div></td><td><span class="pill pb">In progress</span></td></tr>
+          <tr><td><div class="fr"><div class="av at">KI</div>Kemi Ige</div></td><td style="color:var(--color-text-secondary)">UX Design</td><td style="color:var(--color-text-secondary)">Mar 31</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:20%"></div></div><span style="font-size:10px;color:var(--color-text-secondary)">1/5</span></div></td><td><span class="pill pgy">Not started</span></td></tr>
+          <tr><td><div class="fr"><div class="av ar">TN</div>Tunde Nwosu</div></td><td style="color:var(--color-text-secondary)">Data Analyst</td><td style="color:var(--color-text-secondary)">Apr 1</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:0%"></div></div><span style="font-size:10px;color:var(--color-text-secondary)">0/5</span></div></td><td><span class="pill pgy">Pending</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE (HR/Manager) -->
+    <div id="sec-attendance" class="sec">
+      <div class="metrics metrics-3">
+        <div class="mc"><div class="mc-lbl">Present today</div><div class="mc-val">19</div><div class="mc-sub">of 24 active</div></div>
+        <div class="mc"><div class="mc-lbl">Avg attendance (Mar)</div><div class="mc-val">87%</div><div class="mc-sub good">above 80% target</div></div>
+        <div class="mc"><div class="mc-lbl">Late this week</div><div class="mc-val">4</div><div class="mc-sub warn">needs attention</div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct">Today — March 18, 2026</span></div>
+        <table>
+          <tr><th>Intern</th><th>Department</th><th>Check in</th><th>Check out</th><th>Hours</th><th>Status</th></tr>
+          <tr><td><div class="fr"><div class="av ab">CE</div>Chidi Eze</div></td><td style="color:var(--color-text-secondary)">Engineering</td><td>09:02</td><td>—</td><td style="color:var(--color-text-secondary)">5h 30m</td><td><span class="pill pg">Present</span></td></tr>
+          <tr><td><div class="fr"><div class="av aw">ZB</div>Zara Bello</div></td><td style="color:var(--color-text-secondary)">Design</td><td>09:47</td><td>—</td><td style="color:var(--color-text-secondary)">4h 45m</td><td><span class="pill pa">Late</span></td></tr>
+          <tr><td><div class="fr"><div class="av at">NM</div>Ngozi Musa</div></td><td style="color:var(--color-text-secondary)">Marketing</td><td>08:58</td><td>—</td><td style="color:var(--color-text-secondary)">5h 34m</td><td><span class="pill pg">Present</span></td></tr>
+          <tr><td><div class="fr"><div class="av ab">IW</div>Ibrahim Wale</div></td><td style="color:var(--color-text-secondary)">Engineering</td><td>—</td><td>—</td><td style="color:var(--color-text-secondary)">—</td><td><span class="pill pr">Absent</span></td></tr>
+          <tr><td><div class="fr"><div class="av at">AP</div>Ada Peters</div></td><td style="color:var(--color-text-secondary)">Product</td><td>09:05</td><td>—</td><td style="color:var(--color-text-secondary)">5h 27m</td><td><span class="pill pg">Present</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- TASKS (HR/Manager) -->
+    <div id="sec-tasks" class="sec">
+      <div class="search-row">
+        <input type="text" placeholder="Search tasks...">
+        <button class="flt on">All</button><button class="flt">Overdue</button><button class="flt">In progress</button><button class="flt">Done</button>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct">All tasks</span><button class="tbtn pri" style="font-size:11px;padding:4px 10px">+ Assign task</button></div>
+        <table>
+          <tr><th>Task</th><th>Assigned to</th><th>Project</th><th>Due</th><th>Priority</th><th>Status</th></tr>
+          <tr><td style="font-weight:500">Build REST API for auth module</td><td><div class="fr"><div class="av ab" style="width:22px;height:22px;font-size:9px">CE</div>Chidi Eze</div></td><td style="color:var(--color-text-secondary)">Backend</td><td style="color:var(--color-text-secondary)">Mar 22</td><td><span class="pill pr">High</span></td><td><span class="pill pb">In progress</span></td></tr>
+          <tr><td style="font-weight:500">Redesign onboarding flow</td><td><div class="fr"><div class="av aw" style="width:22px;height:22px;font-size:9px">ZB</div>Zara Bello</div></td><td style="color:var(--color-text-secondary)">Product Design</td><td style="color:var(--color-text-secondary)">Mar 19</td><td><span class="pill pr">High</span></td><td><span class="pill pa">Overdue</span></td></tr>
+          <tr><td style="font-weight:500">Q1 social media report</td><td><div class="fr"><div class="av at" style="width:22px;height:22px;font-size:9px">NM</div>Ngozi Musa</div></td><td style="color:var(--color-text-secondary)">Marketing</td><td style="color:var(--color-text-secondary)">Mar 28</td><td><span class="pill pa">Medium</span></td><td><span class="pill pb">In progress</span></td></tr>
+          <tr><td style="font-weight:500">Customer churn analysis</td><td><div class="fr"><div class="av ar" style="width:22px;height:22px;font-size:9px">OA</div>Oluwaseun Adegoke</div></td><td style="color:var(--color-text-secondary)">Data</td><td style="color:var(--color-text-secondary)">Mar 21</td><td><span class="pill pr">High</span></td><td><span class="pill pg">Complete</span></td></tr>
+          <tr><td style="font-weight:500">Implement dark mode toggle</td><td><div class="fr"><div class="av ab" style="width:22px;height:22px;font-size:9px">IW</div>Ibrahim Wale</div></td><td style="color:var(--color-text-secondary)">Frontend</td><td style="color:var(--color-text-secondary)">Apr 1</td><td><span class="pill pgy">Low</span></td><td><span class="pill pa">Overdue</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- INTERN HOME -->
+    <div id="sec-intern-home" class="sec">
+      <div class="metrics metrics-3">
+        <div class="mc"><div class="mc-lbl">My progress</div><div class="mc-val">82%</div><div class="mc-sub good">on track</div></div>
+        <div class="mc"><div class="mc-lbl">Tasks pending</div><div class="mc-val">4</div><div class="mc-sub warn">1 due tomorrow</div></div>
+        <div class="mc"><div class="mc-lbl">Days remaining</div><div class="mc-val">10</div><div class="mc-sub">ends Mar 28</div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><span class="ct">My profile</span></div>
+          <div class="fr" style="margin-bottom:12px;gap:12px">
+            <div class="av ab" style="width:44px;height:44px;font-size:15px">CE</div>
+            <div><div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">Chidi Eze</div><div style="font-size:11px;color:var(--color-text-secondary)">Backend Engineering · Cohort Jan 2026</div></div>
+          </div>
+          <table style="font-size:12px">
+            <tr><td style="color:var(--color-text-secondary);padding:4px 0">Manager</td><td style="padding:4px 0">Tobi Kolade</td></tr>
+            <tr><td style="color:var(--color-text-secondary);padding:4px 0">Start date</td><td style="padding:4px 0">Jan 6, 2026</td></tr>
+            <tr><td style="color:var(--color-text-secondary);padding:4px 0">End date</td><td style="padding:4px 0">Mar 28, 2026</td></tr>
+            <tr><td style="color:var(--color-text-secondary);padding:4px 0">Team</td><td style="padding:4px 0">Platform Engineering</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ct">Onboarding checklist</span></div>
+          <div class="onb-steps" style="flex-direction:column;gap:8px">
+            <div class="fr" style="gap:10px"><div class="onb-num onb-done" style="background:var(--color-background-success);color:var(--color-text-success);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">✓</div><span style="font-size:12px;color:var(--color-text-secondary);text-decoration:line-through">Sign offer letter</span></div>
+            <div class="fr" style="gap:10px"><div class="onb-num onb-done" style="background:var(--color-background-success);color:var(--color-text-success);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">✓</div><span style="font-size:12px;color:var(--color-text-secondary);text-decoration:line-through">Submit ID documents</span></div>
+            <div class="fr" style="gap:10px"><div class="onb-num onb-done" style="background:var(--color-background-success);color:var(--color-text-success);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">✓</div><span style="font-size:12px;color:var(--color-text-secondary);text-decoration:line-through">Complete IT setup</span></div>
+            <div class="fr" style="gap:10px"><div class="onb-num onb-done" style="background:var(--color-background-success);color:var(--color-text-success);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">✓</div><span style="font-size:12px;color:var(--color-text-secondary);text-decoration:line-through">Attend orientation</span></div>
+            <div class="fr" style="gap:10px"><div style="width:20px;height:20px;border-radius:50%;border:1.5px solid var(--color-border-secondary);flex-shrink:0"></div><span style="font-size:12px;color:var(--color-text-primary)">Complete code review training</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERN TASKS -->
+    <div id="sec-intern-tasks" class="sec">
+      <div class="card my-tasks">
+        <div class="ch"><span class="ct">My tasks</span></div>
+        <div class="task-row">
+          <div class="task-check done"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="var(--color-text-success)" stroke-width="1.5"/></svg></div>
+          <span class="task-name done">Set up local dev environment</span>
+          <span class="task-due" style="color:var(--color-text-success)">Done</span>
+        </div>
+        <div class="task-row">
+          <div class="task-check done"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="var(--color-text-success)" stroke-width="1.5"/></svg></div>
+          <span class="task-name done">Write unit tests for login module</span>
+          <span class="task-due" style="color:var(--color-text-success)">Done</span>
+        </div>
+        <div class="task-row">
+          <div class="task-check"></div>
+          <span class="task-name">Build REST API for auth module</span>
+          <span class="task-due warn">Mar 22</span>
+        </div>
+        <div class="task-row">
+          <div class="task-check"></div>
+          <span class="task-name">Write API documentation</span>
+          <span class="task-due">Mar 26</span>
+        </div>
+        <div class="task-row">
+          <div class="task-check"></div>
+          <span class="task-name">Final project presentation</span>
+          <span class="task-due">Mar 27</span>
+        </div>
+        <div class="task-row">
+          <div class="task-check"></div>
+          <span class="task-name">Submit end-of-internship report</span>
+          <span class="task-due">Mar 28</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERN ATTENDANCE -->
+    <div id="sec-intern-attendance" class="sec">
+      <div class="card">
+        <div class="ch"><span class="ct">My attendance — March 2026</span><span class="pill pg">87% this month</span></div>
+        <div class="week-strip">
+          <div class="week-chip"><div class="wc-day">Mon</div><div class="wc-date">16</div><div class="wcs-p wc-status">Present</div></div>
+          <div class="week-chip"><div class="wc-day">Tue</div><div class="wc-date">17</div><div class="wcs-p wc-status">Present</div></div>
+          <div class="week-chip" style="border:0.5px solid var(--color-border-secondary)"><div class="wc-day">Wed</div><div class="wc-date">18</div><div class="wcs-p wc-status">Today</div></div>
+          <div class="week-chip"><div class="wc-day">Thu</div><div class="wc-date">19</div><div class="wcs-f wc-status">—</div></div>
+          <div class="week-chip"><div class="wc-day">Fri</div><div class="wc-date">20</div><div class="wcs-f wc-status">—</div></div>
+        </div>
+        <table>
+          <tr><th>Date</th><th>Check in</th><th>Check out</th><th>Hours</th><th>Status</th></tr>
+          <tr><td style="color:var(--color-text-secondary)">Wed Mar 18</td><td>09:02</td><td>—</td><td>5h 30m (live)</td><td><span class="pill pg">Present</span></td></tr>
+          <tr><td style="color:var(--color-text-secondary)">Tue Mar 17</td><td>09:00</td><td>18:05</td><td>9h 05m</td><td><span class="pill pg">Present</span></td></tr>
+          <tr><td style="color:var(--color-text-secondary)">Mon Mar 16</td><td>09:15</td><td>18:00</td><td>8h 45m</td><td><span class="pill pg">Present</span></td></tr>
+          <tr><td style="color:var(--color-text-secondary)">Fri Mar 13</td><td>09:51</td><td>18:10</td><td>8h 19m</td><td><span class="pill pa">Late</span></td></tr>
+          <tr><td style="color:var(--color-text-secondary)">Thu Mar 12</td><td>08:55</td><td>18:00</td><td>9h 05m</td><td><span class="pill pg">Present</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- INTERN ONBOARDING -->
+    <div id="sec-intern-onboarding" class="sec">
+      <div class="card">
+        <div class="ch"><span class="ct">Onboarding progress</span><span class="pill pg">4 of 5 complete</span></div>
+        <div class="onb-steps" style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px;margin-bottom:14px">
+          <div class="onb-step onb-done"><div class="onb-num">1</div><div class="onb-lbl">Offer signed</div></div>
+          <div class="onb-step onb-done"><div class="onb-num">2</div><div class="onb-lbl">Documents</div></div>
+          <div class="onb-step onb-done"><div class="onb-num">3</div><div class="onb-lbl">IT setup</div></div>
+          <div class="onb-step onb-done"><div class="onb-num">4</div><div class="onb-lbl">Orientation</div></div>
+          <div class="onb-step onb-active"><div class="onb-num">5</div><div class="onb-lbl">Code review training</div></div>
+        </div>
+        <div class="card" style="margin-bottom:0;background:var(--color-background-secondary)">
+          <div class="ct" style="margin-bottom:8px">Current step: Code review training</div>
+          <p style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px">Complete the internal code review guidelines module and pass the short quiz. This ensures you can participate in team PRs from your first week.</p>
+          <button class="bsub">Mark as complete</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+const roleNav = {
+  hr: ['dashboard','applications','pipeline','interns','onboarding','attendance','tasks'],
+  manager: ['dashboard','interns','tasks','attendance'],
+  intern: ['intern-home','intern-tasks','intern-attendance','intern-onboarding']
+};
+const pageTitles = {
+  dashboard:'Dashboard',applications:'Applications',pipeline:'Hiring pipeline',
+  interns:'Intern profiles',onboarding:'Onboarding',attendance:'Attendance',tasks:'Tasks & projects',
+  'intern-home':'My portal','intern-tasks':'My tasks','intern-attendance':'My attendance','intern-onboarding':'My onboarding'
+};
+const ctaLabels = {
+  hr:'+ New application',manager:'+ Assign task',intern:'+ Log time'
+};
+let curRole = 'hr';
+
+function nav(page, el) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  const sec = document.getElementById('sec-'+page);
+  if (sec) sec.classList.add('on');
+  document.getElementById('page-title').textContent = pageTitles[page] || page;
+  if (el) {
+    const navEl = document.getElementById('nav-'+curRole);
+    if (navEl) navEl.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+}
+
+function switchRole(role, tabEl) {
+  curRole = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  ['hr','manager','intern'].forEach(r => {
+    const nav = document.getElementById('nav-'+r);
+    const su = document.getElementById('su-'+r);
+    if (nav) nav.style.display = r === role ? '' : 'none';
+    if (su) su.style.display = r === role ? '' : 'none';
+  });
+  document.getElementById('primary-cta').textContent = ctaLabels[role];
+  const firstPage = roleNav[role][0];
+  const navEl = document.getElementById('nav-'+role);
+  const firstItem = navEl ? navEl.querySelector('.nav-item') : null;
+  if (firstItem) { navEl.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); firstItem.classList.add('active'); }
+  nav(firstPage, null);
+}
+</script>
