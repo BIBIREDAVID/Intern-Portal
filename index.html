@@ -3,606 +3,937 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InternHub Portal</title>
+<title>InternHub</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:#f4f4f2;color:#1a1a18;font-size:13px;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-a{text-decoration:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;background:#f0f2f5}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
 
-/* TOPBAR */
-#topbar{height:52px;background:#fff;border-bottom:1px solid #e5e5e2;display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.brand{display:flex;align-items:center;gap:9px;width:218px;flex-shrink:0}
-.brand-mark{width:28px;height:28px;border-radius:7px;background:#1d4ed8;display:flex;align-items:center;justify-content:center}
-.brand-mark svg{width:14px;height:14px}
-.brand-name{font-size:14px;font-weight:700;color:#1a1a18;letter-spacing:-.3px}
-#page-title{font-size:14px;font-weight:600;color:#1a1a18;flex:1}
-.tb-btn{padding:6px 13px;font-size:12px;border:1px solid #d1d1ce;border-radius:7px;background:#fff;color:#4a4a48;font-weight:500;transition:all .12s}
-.tb-btn:hover{background:#f4f4f2}
-.tb-btn.pri{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
-.tb-btn.pri:hover{background:#1e40af}
+/* ═══ LOGIN SCREEN ═══ */
+#login-screen{position:fixed;inset:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s ease}
+#login-screen.hide{opacity:0;pointer-events:none}
+.login-box{width:420px;padding:48px;background:#1e293b;border-radius:20px;border:1px solid #334155}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px}
+.login-mark{width:40px;height:40px;border-radius:10px;background:#3b82f6;display:flex;align-items:center;justify-content:center}
+.login-mark svg{width:22px;height:22px}
+.login-brand{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.login-tagline{font-size:11px;color:#64748b;margin-top:2px}
+.login-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
+.login-sub{font-size:13px;color:#64748b;margin-bottom:28px}
+.login-roles{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.login-role-btn{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;border:1px solid #334155;background:transparent;color:#e2e8f0;cursor:pointer;transition:all .15s;text-align:left;width:100%}
+.login-role-btn:hover{background:#334155;border-color:#475569}
+.login-role-btn.selected{border-color:#3b82f6;background:rgba(59,130,246,.1)}
+.lrb-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lrb-icon svg{width:18px;height:18px}
+.lrb-name{font-size:13px;font-weight:700;color:#e2e8f0}
+.lrb-desc{font-size:11px;color:#64748b;margin-top:1px}
+.login-btn{width:100%;padding:13px;border-radius:10px;border:none;background:#3b82f6;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s}
+.login-btn:hover{background:#2563eb;transform:translateY(-1px)}
+.login-btn:disabled{background:#334155;color:#475569;cursor:default;transform:none}
 
-/* LAYOUT */
-#layout{display:flex;flex:1;overflow:hidden}
+/* ═══ APP SHELL ═══ */
+#app{display:none;flex:1;flex-direction:column;height:100vh;overflow:hidden}
+#app.show{display:flex}
 
-/* SIDEBAR */
-#sidebar{width:218px;background:#fff;border-right:1px solid #e5e5e2;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
-.role-area{padding:11px 12px;border-bottom:1px solid #e5e5e2}
-.role-lbl{font-size:10px;color:#9b9b98;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-weight:600}
-.role-tabs{display:flex;gap:2px;background:#f4f4f2;border-radius:7px;padding:2px}
-.role-tab{flex:1;text-align:center;padding:5px 0;font-size:11px;font-weight:600;border-radius:5px;cursor:pointer;color:#6b6b68;border:none;background:transparent;transition:all .15s}
-.role-tab.active{background:#fff;color:#1d4ed8;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+/* ══════════════════════════════════════
+   HR PORTAL — Dark sidebar, admin dense
+══════════════════════════════════════ */
+#hr-app{display:none;flex:1;overflow:hidden}
+#hr-app.show{display:flex}
 
-.nav-sec{padding:9px 0 2px}
-.nav-sec-lbl{font-size:10px;color:#9b9b98;text-transform:uppercase;letter-spacing:.07em;padding:0 13px 5px;font-weight:600}
-.nav-item{display:flex;align-items:center;gap:8px;padding:7px 13px;color:#6b6b68;cursor:pointer;font-size:12px;font-weight:500;transition:all .12s}
-.nav-item:hover{background:#f4f4f2;color:#1a1a18}
-.nav-item.active{background:#eff6ff;color:#1e40af}
-.nav-item svg{width:14px;height:14px;flex-shrink:0}
-.nbadge{margin-left:auto;font-size:10px;padding:1px 6px;border-radius:999px;font-weight:700}
-.nbr{background:#fef2f2;color:#991b1b}
-.nbb{background:#eff6ff;color:#1e40af}
+/* HR Sidebar */
+.hr-sidebar{width:240px;background:#0f172a;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.hr-brand{padding:20px 18px 16px;border-bottom:1px solid #1e293b;display:flex;align-items:center;gap:10px}
+.hr-mark{width:32px;height:32px;border-radius:8px;background:#3b82f6;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hr-mark svg{width:16px;height:16px}
+.hr-brand-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.hr-brand-sub{font-size:10px;color:#475569;margin-top:1px}
+.hr-nav-section{padding:16px 0 4px}
+.hr-nav-lbl{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.1em;padding:0 18px 6px;font-weight:700}
+.hr-nav-item{display:flex;align-items:center;gap:10px;padding:8px 18px;color:#94a3b8;cursor:pointer;font-size:12px;font-weight:500;transition:all .12s;border-left:2px solid transparent}
+.hr-nav-item:hover{color:#e2e8f0;background:#1e293b}
+.hr-nav-item.active{color:#60a5fa;background:rgba(59,130,246,.08);border-left-color:#3b82f6}
+.hr-nav-item svg{width:14px;height:14px;flex-shrink:0}
+.hr-nbadge{margin-left:auto;font-size:9px;padding:2px 6px;border-radius:999px;font-weight:800;background:#ef4444;color:#fff}
+.hr-sidebar-footer{margin-top:auto;padding:16px 18px;border-top:1px solid #1e293b}
+.hr-user{display:flex;align-items:center;gap:10px}
+.hr-uav{width:32px;height:32px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.hr-uname{font-size:12px;font-weight:700;color:#e2e8f0}
+.hr-urole{font-size:10px;color:#475569}
+.hr-logout{margin-left:auto;width:26px;height:26px;border-radius:6px;border:1px solid #334155;background:transparent;color:#475569;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s;flex-shrink:0}
+.hr-logout:hover{background:#334155;color:#94a3b8}
+.hr-logout svg{width:12px;height:12px}
 
-.sidebar-user{margin-top:auto;padding:11px 13px;border-top:1px solid #e5e5e2;display:flex;align-items:center;gap:9px}
-.uav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.uhr{background:#eff6ff;color:#1e40af}
-.umgr{background:#f0fdf4;color:#166534}
-.uint{background:#fffbeb;color:#92400e}
-.uname{font-size:12px;font-weight:700;color:#1a1a18}
-.urole{font-size:10px;color:#9b9b98}
+/* HR Main */
+.hr-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.hr-topbar{height:52px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0}
+.hr-page-title{font-size:14px;font-weight:700;color:#111827;flex:1}
+.hr-btn{padding:7px 13px;font-size:11px;font-weight:600;border:1px solid #d1d5db;border-radius:7px;background:#fff;color:#374151;transition:all .12s}
+.hr-btn:hover{background:#f9fafb}
+.hr-btn.pri{background:#2563eb;border-color:#2563eb;color:#fff}
+.hr-btn.pri:hover{background:#1d4ed8}
+.hr-btn.grn{background:#16a34a;border-color:#16a34a;color:#fff}
+.hr-content{flex:1;overflow-y:auto;padding:18px;background:#f8fafc}
+.hr-sec{display:none}.hr-sec.on{display:block;animation:fi .16s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-/* MAIN */
-#main{flex:1;overflow-y:auto;padding:18px;min-width:0;background:#f4f4f2}
-
-/* SECTIONS */
-.sec{display:none}.sec.on{display:block}
-
-/* METRIC CARDS */
-.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:16px}
-.m3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.mc{background:#fff;border-radius:10px;border:1px solid #e5e5e2;padding:14px 15px}
-.mc-lbl{font-size:11px;color:#6b6b68;margin-bottom:5px;font-weight:500}
-.mc-val{font-size:26px;font-weight:700;color:#1a1a18;line-height:1}
-.mc-sub{font-size:11px;color:#9b9b98;margin-top:4px}
-.good{color:#15803d}.warn{color:#b45309}
-
-/* CARD */
-.card{background:#fff;border:1px solid #e5e5e2;border-radius:10px;padding:15px;margin-bottom:13px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
-.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
-.ct{font-size:13px;font-weight:700;color:#1a1a18}
-.ca{font-size:11px;color:#1d4ed8;cursor:pointer;font-weight:500}
-.ca:hover{text-decoration:underline}
-
-/* GRID */
-.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:13px;margin-bottom:13px}
-
-/* TABLE */
+/* HR components */
+.hr-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.hr-mc{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:15px}
+.hr-mc-lbl{font-size:10px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.hr-mc-val{font-size:28px;font-weight:800;color:#111827;letter-spacing:-1px;line-height:1}
+.hr-mc-sub{font-size:11px;margin-top:5px;font-weight:500}
+.hr-mc-sub.g{color:#16a34a}.hr-mc-sub.w{color:#d97706}.hr-mc-sub.r{color:#dc2626}
+.hr-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;margin-bottom:13px}
+.hr-ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.hr-ct{font-size:13px;font-weight:700;color:#111827}
+.hr-ca{font-size:11px;color:#2563eb;cursor:pointer;font-weight:600}
+.hr-g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px}
 table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:11px;color:#9b9b98;padding:0 10px 9px 0;font-weight:600;border-bottom:1px solid #eeeeeb;white-space:nowrap}
-td{padding:10px 10px 10px 0;border-bottom:1px solid #f0f0ed;vertical-align:middle;color:#1a1a18}
-tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:#fafaf8}
-td.m{color:#6b6b68}
-
-/* PILLS */
-.pill{display:inline-block;font-size:10px;padding:3px 8px;border-radius:999px;font-weight:700}
-.pg{background:#f0fdf4;color:#166534}
-.pa{background:#fffbeb;color:#92400e}
-.pb{background:#eff6ff;color:#1e40af}
-.pr{background:#fef2f2;color:#991b1b}
-.pgy{background:#f3f4f6;color:#4b5563}
-
-/* AVATARS */
-.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.ab{background:#eff6ff;color:#1e40af}
-.at{background:#f0fdf4;color:#166534}
-.aw{background:#fffbeb;color:#92400e}
-.ar{background:#fef2f2;color:#991b1b}
+.hr-table th{text-align:left;font-size:10px;color:#9ca3af;padding:0 10px 9px 0;font-weight:700;border-bottom:1px solid #f3f4f6;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.hr-table td{padding:10px 10px 10px 0;border-bottom:1px solid #f9fafb;color:#111827;vertical-align:middle;font-size:12px}
+.hr-table tr:last-child td{border-bottom:none}
+.hr-table tbody tr:hover td{background:#fafafa}
+.tm{color:#6b7280}
+.pill{display:inline-flex;align-items:center;font-size:10px;padding:3px 8px;border-radius:999px;font-weight:700}
+.pg{background:#dcfce7;color:#166534}.pa{background:#fef9c3;color:#854d0e}.pb{background:#dbeafe;color:#1e40af}.pr{background:#fee2e2;color:#991b1b}.pgy{background:#f3f4f6;color:#374151}.pp{background:#f5f3ff;color:#5b21b6}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0}
+.ab{background:#dbeafe;color:#1e40af}.at{background:#dcfce7;color:#166534}.aw{background:#fef9c3;color:#854d0e}.ar{background:#fee2e2;color:#991b1b}.ap{background:#f5f3ff;color:#5b21b6}
 .fr{display:flex;align-items:center;gap:8px}
-
-/* PROGRESS */
-.pw{background:#f0f0ed;border-radius:999px;height:5px;flex:1;min-width:50px;overflow:hidden}
-.pb2{height:5px;border-radius:999px;background:#1d4ed8}
-.pbw{background:#b45309}
-
-/* TIMELINE */
-.tl{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0ed}
-.tl:last-child{border-bottom:none}
-.tld{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.tlb{background:#1d4ed8}.tlg{background:#15803d}.tla{background:#b45309}
-.tlt{font-size:12px;color:#1a1a18;line-height:1.5}
-.tls{font-size:10px;color:#9b9b98;margin-top:1px}
-
-/* SEARCH */
-.srow{display:flex;gap:6px;margin-bottom:13px}
-.srow input{flex:1;padding:7px 11px;font-size:12px;border:1px solid #d1d1ce;border-radius:7px;background:#fff;color:#1a1a18;outline:none}
-.srow input:focus{border-color:#1d4ed8}
-.flt{padding:6px 11px;font-size:11px;font-weight:500;border:1px solid #e5e5e2;border-radius:7px;background:#fff;color:#6b6b68;transition:all .12s}
-.flt:hover{background:#f4f4f2}
-.flt.on{background:#eff6ff;border-color:#93c5fd;color:#1e40af}
-
-/* INTERN GRID */
-.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:11px}
-.icard{background:#fff;border:1px solid #e5e5e2;border-radius:10px;padding:15px;text-align:center}
+.pw{background:#f3f4f6;border-radius:999px;height:5px;flex:1;min-width:50px;overflow:hidden}
+.pb2{height:5px;border-radius:999px}
+.pb2.blu{background:#2563eb}.pb2.grn{background:#16a34a}.pb2.amb{background:#d97706}.pb2.red{background:#dc2626}
+.hr-srow{display:flex;gap:6px;margin-bottom:13px}
+.hr-sinput{flex:1;padding:7px 11px 7px 32px;font-size:12px;border:1px solid #d1d5db;border-radius:7px;background:#fff;color:#111827;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='5.5' cy='5.5' r='3.5'/%3E%3Cpath d='M13 13l-3-3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px 50%}
+.hr-sinput:focus{border-color:#2563eb}
+.hr-flt{padding:6px 11px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:7px;background:#fff;color:#6b7280;cursor:pointer;transition:all .12s}
+.hr-flt.on{background:#dbeafe;border-color:#93c5fd;color:#1e40af}
+.hr-tl{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6}
+.hr-tl:last-child{border-bottom:none}
+.hr-tld{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.hr-kb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.hr-kbc{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:11px}
+.hr-kbh{font-size:10px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #e5e7eb}
+.hr-kbcard{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;margin-bottom:7px;cursor:pointer;transition:all .12s}
+.hr-kbcard:hover{border-color:#93c5fd}
+.hr-kbcard:last-child{margin-bottom:0}
+.hr-kbn{font-size:12px;font-weight:700;color:#111827}
+.hr-kbm{font-size:10px;color:#9ca3af;margin-top:2px}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:11px}
+.icard{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .15s}
+.icard:hover{border-color:#2563eb;transform:translateY(-1px)}
 .icard .av{width:40px;height:40px;font-size:13px;margin:0 auto 9px}
-.icn{font-size:12px;font-weight:700;color:#1a1a18;margin-bottom:2px}
-.icd{font-size:10px;color:#9b9b98;margin-bottom:9px}
-.icp{width:100%;margin-bottom:5px}
-.icpct{font-size:10px;color:#6b6b68}
-
-/* KANBAN */
-.kb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
-.kbc{background:#f4f4f2;border-radius:10px;padding:11px}
-.kbh{font-size:11px;font-weight:700;color:#6b6b68;display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #e5e5e2}
-.kbcard{background:#fff;border:1px solid #e5e5e2;border-radius:7px;padding:10px;margin-bottom:7px}
-.kbcard:last-child{margin-bottom:0}
-.kbn{font-size:12px;font-weight:600;color:#1a1a18}
-.kbm{font-size:10px;color:#9b9b98;margin-top:2px}
-
-/* ONBOARDING BAR */
-.onb{display:flex;align-items:flex-start;margin-bottom:18px}
+.ic-name{font-size:12px;font-weight:700;color:#111827;margin-bottom:1px}
+.ic-dept{font-size:10px;color:#9ca3af;margin-bottom:8px}
+.onb-bar{display:flex;padding:14px;background:#f8fafc;border-radius:10px;margin-bottom:14px;border:1px solid #e5e7eb}
 .onb-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
-.onb-step:not(:last-child)::after{content:"";position:absolute;top:11px;left:50%;width:100%;height:2px;background:#e5e5e2}
-.onb-step.done::after{background:#15803d}
-.onb-c{width:22px;height:22px;border-radius:50%;z-index:1;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:2px solid #e5e5e2;background:#fff;color:#9b9b98;margin-bottom:5px;position:relative}
-.onb-step.done .onb-c{background:#15803d;border-color:#15803d;color:#fff}
-.onb-step.active .onb-c{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
-.onb-l{font-size:10px;color:#9b9b98;text-align:center;line-height:1.3;font-weight:500}
-.onb-step.done .onb-l{color:#166534}
-.onb-step.active .onb-l{color:#1e40af;font-weight:700}
+.onb-step:not(:last-child)::after{content:"";position:absolute;top:13px;left:50%;width:100%;height:2px;background:#e5e7eb}
+.onb-step.done::after{background:#16a34a}
+.onb-c{width:26px;height:26px;border-radius:50%;z-index:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:2px solid #e5e7eb;background:#fff;color:#9ca3af;margin-bottom:5px;position:relative}
+.onb-step.done .onb-c{background:#16a34a;border-color:#16a34a;color:#fff}
+.onb-step.active .onb-c{background:#2563eb;border-color:#2563eb;color:#fff;box-shadow:0 0 0 3px #dbeafe}
+.onb-l{font-size:9px;color:#9ca3af;text-align:center;font-weight:600;max-width:55px}
+.onb-step.done .onb-l{color:#16a34a}
+.onb-step.active .onb-l{color:#1e40af;font-weight:800}
+.dept-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6}
+.dept-row:last-child{border-bottom:none}
+.dept-nm{width:95px;font-size:12px;color:#6b7280;font-weight:600;flex-shrink:0}
+.dept-bw{flex:1;background:#f3f4f6;border-radius:999px;height:6px;overflow:hidden}
+.dept-bf{height:6px;border-radius:999px}
+.dept-pct{width:30px;text-align:right;font-size:11px;font-weight:800;color:#111827}
 
-/* TASK CHECKLIST */
-.trow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0ed}
-.trow:last-child{border-bottom:none}
-.tck{width:16px;height:16px;border-radius:4px;border:1.5px solid #d1d1ce;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff}
-.tck.done{background:#15803d;border-color:#15803d}
-.tname{flex:1;font-size:12px;color:#1a1a18;font-weight:500}
-.tname.done{color:#9b9b98;text-decoration:line-through;font-weight:400}
-.tdue{font-size:10px;color:#9b9b98;white-space:nowrap}
-.tdue.w{color:#b45309;font-weight:700}
+/* ══════════════════════════════════════
+   MANAGER PORTAL — Clean, team-focused
+══════════════════════════════════════ */
+#mgr-app{display:none;flex:1;overflow:hidden}
+#mgr-app.show{display:flex;flex-direction:column}
+.mgr-topbar{height:56px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
+.mgr-brand{display:flex;align-items:center;gap:10px}
+.mgr-mark{width:30px;height:30px;border-radius:8px;background:#0d9488;display:flex;align-items:center;justify-content:center}
+.mgr-mark svg{width:16px;height:16px}
+.mgr-brand-name{font-size:14px;font-weight:800;color:#111827;letter-spacing:-.3px}
+.mgr-brand-role{font-size:10px;color:#6b7280;background:#f0fdfa;color:#0f766e;padding:2px 8px;border-radius:999px;font-weight:700;border:1px solid #99f6e4}
+.mgr-nav{display:flex;gap:2px;margin-left:24px;flex:1}
+.mgr-nav-item{padding:7px 14px;font-size:12px;font-weight:600;border-radius:7px;cursor:pointer;color:#6b7280;transition:all .12s;border:none;background:transparent;display:flex;align-items:center;gap:6px}
+.mgr-nav-item:hover{background:#f9fafb;color:#111827}
+.mgr-nav-item.active{background:#f0fdfa;color:#0f766e}
+.mgr-nav-item svg{width:13px;height:13px}
+.mgr-nbadge{font-size:9px;padding:1px 5px;border-radius:999px;font-weight:800;background:#ef4444;color:#fff}
+.mgr-topbar-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.mgr-btn{padding:7px 14px;font-size:12px;font-weight:600;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#374151;cursor:pointer;transition:all .12s}
+.mgr-btn:hover{background:#f9fafb}
+.mgr-btn.pri{background:#0d9488;border-color:#0d9488;color:#fff}
+.mgr-btn.pri:hover{background:#0f766e}
+.mgr-user{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 5px;border:1px solid #e5e7eb;border-radius:999px;cursor:pointer}
+.mgr-uav{width:28px;height:28px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800}
+.mgr-uname{font-size:12px;font-weight:700;color:#111827}
+.mgr-content{flex:1;overflow-y:auto;padding:20px 24px;background:#f9fafb}
+.mgr-sec{display:none}.mgr-sec.on{display:block;animation:fi .16s ease}
+.mgr-header{margin-bottom:18px}
+.mgr-htitle{font-size:20px;font-weight:800;color:#111827;letter-spacing:-.4px}
+.mgr-hsub{font-size:13px;color:#6b7280;margin-top:3px}
+.mgr-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.mgr-mc{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px}
+.mgr-mc-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.mgr-mc-icon svg{width:18px;height:18px}
+.mgr-mc-lbl{font-size:11px;color:#6b7280;font-weight:500;margin-bottom:4px}
+.mgr-mc-val{font-size:26px;font-weight:800;color:#111827;letter-spacing:-1px}
+.mgr-mc-sub{font-size:11px;color:#9ca3af;margin-top:3px}
+.mgr-mc-sub.g{color:#16a34a}.mgr-mc-sub.w{color:#d97706}
+.mgr-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin-bottom:14px}
+.mgr-ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.mgr-ct{font-size:14px;font-weight:800;color:#111827;letter-spacing:-.3px}
+.mgr-ca{font-size:11px;color:#0d9488;cursor:pointer;font-weight:600}
+.mgr-g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.mgr-table th{text-align:left;font-size:10px;color:#9ca3af;padding:0 12px 10px 0;font-weight:700;border-bottom:1px solid #f3f4f6;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.mgr-table td{padding:11px 12px 11px 0;border-bottom:1px solid #f9fafb;color:#111827;vertical-align:middle;font-size:12px}
+.mgr-table tr:last-child td{border-bottom:none}
+.mgr-table tbody tr:hover td{background:#f0fdfa}
+.mgr-tl{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #f3f4f6}
+.mgr-tl:last-child{border-bottom:none}
+.mgr-tld{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.mgr-tlt{font-size:12px;color:#111827;line-height:1.5;font-weight:500}
+.mgr-tls{font-size:10px;color:#9ca3af;margin-top:2px}
+.mgr-intern-row{display:flex;align-items:center;gap:14px;padding:13px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;margin-bottom:8px;transition:all .12s;cursor:pointer}
+.mgr-intern-row:hover{border-color:#99f6e4;background:#f0fdfa}
+.mgr-intern-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.mgr-intern-name{font-size:13px;font-weight:700;color:#111827;line-height:1}
+.mgr-intern-meta{font-size:11px;color:#9ca3af;margin-top:2px}
+.mgr-intern-prog{flex:1;min-width:80px}
+.mgr-intern-pct{font-size:12px;font-weight:800;color:#111827;margin-left:8px}
+.mgr-task-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid #f3f4f6}
+.mgr-task-row:last-child{border-bottom:none}
+.mgr-tck{width:18px;height:18px;border-radius:5px;border:1.5px solid #d1d5db;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;cursor:pointer;transition:all .15s;margin-top:1px}
+.mgr-tck.done{background:#0d9488;border-color:#0d9488}
+.mgr-task-body{flex:1}
+.mgr-task-name{font-size:12px;font-weight:600;color:#111827}
+.mgr-task-name.done{color:#9ca3af;text-decoration:line-through;font-weight:400}
+.mgr-task-meta{font-size:10px;color:#9ca3af;margin-top:2px;display:flex;align-items:center;gap:8px}
+.mgr-task-due{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.mgr-task-due.ok{background:#f0fdfa;color:#0f766e}.mgr-task-due.ov{background:#fee2e2;color:#991b1b}
 
-/* WEEK STRIP */
-.wstrip{display:flex;gap:6px;margin-bottom:13px}
-.wchip{flex:1;background:#fff;border:1px solid #e5e5e2;border-radius:7px;padding:8px 4px;text-align:center}
-.wchip.today{border-color:#1d4ed8;background:#eff6ff}
-.wcd{font-size:10px;color:#9b9b98;font-weight:500}
-.wcn{font-size:13px;font-weight:700;color:#1a1a18;margin:2px 0}
-.wcs{font-size:10px;font-weight:600}
-.wcp{color:#15803d}.wca{color:#b91c1c}.wcl{color:#b45309}.wcf{color:#9b9b98}
+/* ══════════════════════════════════════
+   INTERN PORTAL — Personal, friendly, motivational
+══════════════════════════════════════ */
+#int-app{display:none;flex:1;overflow:hidden}
+#int-app.show{display:flex;flex-direction:column}
+.int-topbar{height:56px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
+.int-brand{display:flex;align-items:center;gap:9px}
+.int-mark{width:30px;height:30px;border-radius:8px;background:#7c3aed;display:flex;align-items:center;justify-content:center}
+.int-mark svg{width:16px;height:16px}
+.int-brand-name{font-size:14px;font-weight:800;color:#111827;letter-spacing:-.3px}
+.int-tabs{display:flex;gap:2px;margin-left:auto;background:#f5f3ff;border-radius:8px;padding:2px}
+.int-tab{padding:6px 14px;font-size:11px;font-weight:600;border-radius:6px;cursor:pointer;color:#7c3aed;border:none;background:transparent;transition:all .15s}
+.int-tab.active{background:#fff;color:#5b21b6;box-shadow:0 1px 3px rgba(124,58,237,.15)}
+.int-logout{padding:7px 13px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#6b7280;cursor:pointer;margin-left:8px}
+.int-content{flex:1;overflow-y:auto;background:#faf5ff}
+.int-sec{display:none}.int-sec.on{display:block;animation:fi .16s ease}
 
-/* FORM */
-.fg{margin-bottom:11px}
-.fl{font-size:11px;color:#6b6b68;margin-bottom:4px;display:block;font-weight:600}
-.fi{width:100%;padding:8px 10px;font-size:12px;border:1px solid #d1d1ce;border-radius:7px;background:#fff;color:#1a1a18;outline:none;transition:border-color .15s}
-.fi:focus{border-color:#1d4ed8}
+/* Intern Hero */
+.int-hero{background:linear-gradient(135deg,#7c3aed 0%,#5b21b6 50%,#4c1d95 100%);padding:28px 24px 32px;position:relative;overflow:hidden}
+.int-hero::before{content:"";position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.05)}
+.int-hero::after{content:"";position:absolute;bottom:-60px;left:60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.03)}
+.int-hero-greeting{font-size:11px;color:rgba(255,255,255,.6);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em}
+.int-hero-name{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
+.int-hero-sub{font-size:13px;color:rgba(255,255,255,.65)}
+.int-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;position:relative;z-index:1}
+.int-hero-stat{background:rgba(255,255,255,.1);border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(4px)}
+.int-hero-stat-val{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.int-hero-stat-lbl{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px;font-weight:500}
+.int-body{padding:20px}
+.int-section-title{font-size:13px;font-weight:800;color:#111827;letter-spacing:-.2px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.int-section-link{font-size:11px;color:#7c3aed;font-weight:600;cursor:pointer}
+.int-section-link:hover{text-decoration:underline}
+
+/* Intern cards */
+.int-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;margin-bottom:14px}
+.int-prog-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;margin-bottom:14px}
+.int-prog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.int-prog-label{font-size:12px;font-weight:700;color:#111827}
+.int-prog-pct{font-size:13px;font-weight:800;color:#7c3aed}
+.int-prog-bar{background:#f3f4f6;border-radius:999px;height:8px;overflow:hidden;margin-bottom:6px}
+.int-prog-fill{height:8px;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width .6s ease}
+.int-prog-sub{font-size:11px;color:#9ca3af}
+
+/* Task cards */
+.int-task-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f3f4f6}
+.int-task-item:last-child{border-bottom:none}
+.int-tck{width:20px;height:20px;border-radius:6px;border:2px solid #e5e7eb;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.int-tck:hover{border-color:#7c3aed}
+.int-tck.done{background:#7c3aed;border-color:#7c3aed}
+.int-task-text{flex:1;font-size:13px;color:#111827;font-weight:500}
+.int-task-text.done{text-decoration:line-through;color:#9ca3af;font-weight:400}
+.int-task-due{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.int-task-due.soon{background:#fef9c3;color:#854d0e}
+.int-task-due.ok{background:#f0fdf4;color:#166534}
+.int-task-due.done{background:#f5f3ff;color:#5b21b6}
+.int-task-due.ov{background:#fee2e2;color:#991b1b}
+
+/* Attendance strip */
+.int-att-strip{display:flex;gap:8px;margin-bottom:16px}
+.int-att-chip{flex:1;border-radius:10px;padding:10px 6px;text-align:center;border:1px solid #e5e7eb;background:#fff}
+.int-att-chip.today{border-color:#7c3aed;background:#faf5ff}
+.int-att-chip.p{border-color:#bbf7d0}
+.int-att-chip.l{border-color:#fde68a}
+.int-att-chip.a{border-color:#fecaca}
+.int-att-d{font-size:10px;color:#9ca3af;font-weight:600;text-transform:uppercase}
+.int-att-n{font-size:14px;font-weight:800;color:#111827;margin:3px 0}
+.int-att-s{font-size:10px;font-weight:700}
+.int-att-s.p{color:#16a34a}.int-att-s.l{color:#d97706}.int-att-s.t{color:#7c3aed}.int-att-s.f{color:#9ca3af}
+.int-att-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #f3f4f6}
+.int-att-row:last-child{border-bottom:none}
+.int-att-date{width:90px;font-size:12px;color:#6b7280;font-weight:500}
+.int-att-time{font-size:12px;color:#111827;font-weight:600;flex:1}
+.int-att-hrs{font-size:11px;color:#6b7280;width:70px}
+
+/* Onboarding */
+.int-onb-steps{display:flex;flex-direction:column;gap:2px}
+.int-onb-step{display:flex;align-items:center;gap:14px;padding:14px;border-radius:10px;transition:all .12s}
+.int-onb-step.done{background:#f0fdf4}
+.int-onb-step.active{background:#faf5ff;border:1px solid #ddd6fe}
+.int-onb-step.pending{opacity:.6}
+.int-onb-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.int-onb-step.done .int-onb-num{background:#16a34a;color:#fff}
+.int-onb-step.active .int-onb-num{background:#7c3aed;color:#fff}
+.int-onb-step.pending .int-onb-num{background:#f3f4f6;color:#9ca3af}
+.int-onb-title{font-size:13px;font-weight:700;color:#111827}
+.int-onb-sub{font-size:11px;color:#9ca3af;margin-top:2px}
+.int-onb-step.done .int-onb-title{color:#16a34a}
+.int-btn{padding:9px 18px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .15s;display:inline-block}
+.int-btn.pri{background:#7c3aed;color:#fff}
+.int-btn.pri:hover{background:#6d28d9;transform:translateY(-1px)}
+.int-btn.sec{background:#f5f3ff;color:#5b21b6;border:1px solid #ddd6fe}
+.int-btn.sec:hover{background:#ede9fe}
+
+/* ═══ TOAST ═══ */
+#toast{position:fixed;bottom:20px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast-item{background:#1f2937;color:#fff;padding:11px 15px;border-radius:9px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:tin .2s ease;max-width:280px}
+.toast-item.s{background:#16a34a}.toast-item.w{background:#d97706}
+@keyframes tin{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ═══ MODAL ═══ */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal-ov.open{display:flex;animation:fi .15s ease}
+.modal-box{background:#fff;border-radius:16px;padding:24px;width:480px;max-width:90vw;box-shadow:0 20px 40px rgba(0,0,0,.15)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:15px;font-weight:800;color:#111827}
+.modal-x{width:28px;height:28px;border-radius:7px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:16px;color:#6b7280;display:flex;align-items:center;justify-content:center}
+.modal-x:hover{background:#f9fafb}
+.modal-ftr{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid #f3f4f6}
+.fg{margin-bottom:12px}
+.fl{font-size:11px;color:#374151;margin-bottom:4px;display:block;font-weight:700}
+.fi{width:100%;padding:8px 11px;font-size:12px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#111827;outline:none;transition:border-color .15s}
+.fi:focus{border-color:#2563eb;box-shadow:0 0 0 3px #dbeafe}
 textarea.fi{resize:vertical;min-height:65px}
-.bsub{padding:8px 17px;background:#1d4ed8;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s}
-.bsub:hover{background:#1e40af}
-
-/* ACT BUTTON */
-.act{padding:5px 10px;font-size:11px;font-weight:600;border:1px solid #d1d1ce;border-radius:6px;background:#fff;color:#4a4a48;transition:all .12s}
-.act:hover{background:#f4f4f2}
-.act.pri{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
-.act.pri:hover{background:#1e40af}
-.act:disabled{opacity:.5;cursor:default}
-
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#d1d1ce;border-radius:999px}
+select.fi{cursor:pointer}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bsub{padding:9px 18px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.bsub.teal{background:#0d9488}
+.bsub:hover{opacity:.9;transform:translateY(-1px)}
+.bcancel{padding:9px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#374151;font-size:12px;font-weight:600;cursor:pointer}
 </style>
 </head>
 <body>
 
-<div id="topbar">
-  <div class="brand">
-    <div class="brand-mark">
-      <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="1" width="5" height="5" rx="1.2" fill="white"/>
-        <rect x="8" y="1" width="5" height="5" rx="1.2" fill="white" opacity=".55"/>
-        <rect x="1" y="8" width="5" height="5" rx="1.2" fill="white" opacity=".55"/>
-        <rect x="8" y="8" width="5" height="5" rx="1.2" fill="white" opacity=".3"/>
-      </svg>
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-mark">
+        <svg viewBox="0 0 22 22" fill="none"><rect x="1" y="1" width="9" height="9" rx="2" fill="white"/><rect x="12" y="1" width="9" height="9" rx="2" fill="white" opacity=".55"/><rect x="1" y="12" width="9" height="9" rx="2" fill="white" opacity=".55"/><rect x="12" y="12" width="9" height="9" rx="2" fill="white" opacity=".3"/></svg>
+      </div>
+      <div><div class="login-brand">InternHub</div><div class="login-tagline">Internship Management Portal</div></div>
     </div>
-    <span class="brand-name">InternHub</span>
-  </div>
-  <div id="page-title">Dashboard</div>
-  <button class="tb-btn">Export</button>
-  <button class="tb-btn pri" id="cta-btn">+ New application</button>
-</div>
-
-<div id="layout">
-<div id="sidebar">
-  <div class="role-area">
-    <div class="role-lbl">Viewing as</div>
-    <div class="role-tabs">
-      <button class="role-tab active" onclick="switchRole('hr',this)">HR</button>
-      <button class="role-tab" onclick="switchRole('manager',this)">Manager</button>
-      <button class="role-tab" onclick="switchRole('intern',this)">Intern</button>
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">Select your role to continue</div>
+    <div class="login-roles">
+      <button class="login-role-btn" onclick="selectRole('hr',this)">
+        <div class="lrb-icon" style="background:#1e3a5f"><svg viewBox="0 0 16 16" fill="none" stroke="#60a5fa" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div>
+        <div><div class="lrb-name">HR Administrator</div><div class="lrb-desc">Full portal access — recruitment, interns, reports</div></div>
+      </button>
+      <button class="login-role-btn" onclick="selectRole('manager',this)">
+        <div class="lrb-icon" style="background:#0d3d38"><svg viewBox="0 0 16 16" fill="none" stroke="#34d399" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg></div>
+        <div><div class="lrb-name">Team Manager</div><div class="lrb-desc">Your interns, tasks, and team attendance</div></div>
+      </button>
+      <button class="login-role-btn" onclick="selectRole('intern',this)">
+        <div class="lrb-icon" style="background:#3b1e6b"><svg viewBox="0 0 16 16" fill="none" stroke="#c4b5fd" stroke-width="1.5"><path d="M8 1l2 4h4l-3 3 1 4-4-2-4 2 1-4L2 5h4z"/></svg></div>
+        <div><div class="lrb-name">Intern</div><div class="lrb-desc">Your personal workspace — tasks, attendance, progress</div></div>
+      </button>
     </div>
-  </div>
-
-  <div id="nav-hr">
-    <div class="nav-sec">
-      <div class="nav-sec-lbl">Overview</div>
-      <div class="nav-item active" onclick="goTo('dashboard',this)">
-        <svg viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/></svg>
-        Dashboard
-      </div>
-    </div>
-    <div class="nav-sec">
-      <div class="nav-sec-lbl">Recruitment</div>
-      <div class="nav-item" onclick="goTo('applications',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/><path d="M4 5h6M4 7.5h6M4 10h3.5"/></svg>
-        Applications <span class="nbadge nbr">7</span>
-      </div>
-      <div class="nav-item" onclick="goTo('pipeline',this)">
-        <svg viewBox="0 0 14 14" fill="currentColor"><circle cx="2.5" cy="7" r="1.8"/><circle cx="7" cy="7" r="1.8"/><circle cx="11.5" cy="7" r="1.8"/></svg>
-        Hiring pipeline
-      </div>
-    </div>
-    <div class="nav-sec">
-      <div class="nav-sec-lbl">Interns</div>
-      <div class="nav-item" onclick="goTo('interns',this)">
-        <svg viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
-        Intern profiles
-      </div>
-      <div class="nav-item" onclick="goTo('onboarding',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/><path d="M4 7l2 2 4-4"/></svg>
-        Onboarding <span class="nbadge nbb">3</span>
-      </div>
-      <div class="nav-item" onclick="goTo('attendance',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="2.5" width="11" height="10" rx="1.5"/><path d="M4.5 1v3M9.5 1v3M1.5 6h11"/></svg>
-        Attendance
-      </div>
-    </div>
-    <div class="nav-sec">
-      <div class="nav-sec-lbl">Work</div>
-      <div class="nav-item" onclick="goTo('tasks',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 4h10M2 7h10M2 10h6"/></svg>
-        Tasks &amp; projects <span class="nbadge nbr">5</span>
-      </div>
-    </div>
-  </div>
-
-  <div id="nav-manager" style="display:none">
-    <div class="nav-sec">
-      <div class="nav-sec-lbl">My team</div>
-      <div class="nav-item active" onclick="goTo('dashboard',this)">
-        <svg viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/></svg>
-        Overview
-      </div>
-      <div class="nav-item" onclick="goTo('interns',this)">
-        <svg viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
-        My interns
-      </div>
-      <div class="nav-item" onclick="goTo('tasks',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 4h10M2 7h10M2 10h6"/></svg>
-        Assign tasks <span class="nbadge nbr">2</span>
-      </div>
-      <div class="nav-item" onclick="goTo('attendance',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="2.5" width="11" height="10" rx="1.5"/><path d="M4.5 1v3M9.5 1v3M1.5 6h11"/></svg>
-        Attendance
-      </div>
-    </div>
-  </div>
-
-  <div id="nav-intern" style="display:none">
-    <div class="nav-sec">
-      <div class="nav-sec-lbl">My portal</div>
-      <div class="nav-item active" onclick="goTo('intern-home',this)">
-        <svg viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/></svg>
-        Home
-      </div>
-      <div class="nav-item" onclick="goTo('intern-tasks',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 4h10M2 7h10M2 10h6"/></svg>
-        My tasks <span class="nbadge nbb">4</span>
-      </div>
-      <div class="nav-item" onclick="goTo('intern-attendance',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="2.5" width="11" height="10" rx="1.5"/><path d="M4.5 1v3M9.5 1v3M1.5 6h11"/></svg>
-        My attendance
-      </div>
-      <div class="nav-item" onclick="goTo('intern-onboarding',this)">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/><path d="M4 7l2 2 4-4"/></svg>
-        Onboarding
-      </div>
-    </div>
-  </div>
-
-  <div class="sidebar-user" id="su-hr">
-    <div class="uav uhr">SA</div>
-    <div><div class="uname">Sarah Adeyemi</div><div class="urole">HR Manager</div></div>
-  </div>
-  <div class="sidebar-user" id="su-manager" style="display:none">
-    <div class="uav umgr">TK</div>
-    <div><div class="uname">Tobi Kolade</div><div class="urole">Eng. Manager</div></div>
-  </div>
-  <div class="sidebar-user" id="su-intern" style="display:none">
-    <div class="uav uint">CE</div>
-    <div><div class="uname">Chidi Eze</div><div class="urole">Software Intern</div></div>
+    <button class="login-btn" id="login-btn" disabled onclick="doLogin()">Select a role to continue</button>
   </div>
 </div>
 
-<div id="main">
+<!-- ══════════ APP ══════════ -->
+<div id="app">
 
-<!-- DASHBOARD -->
-<div id="sec-dashboard" class="sec on">
-  <div class="metrics">
-    <div class="mc"><div class="mc-lbl">Active interns</div><div class="mc-val">24</div><div class="mc-sub good">+3 this month</div></div>
-    <div class="mc"><div class="mc-lbl">Open applications</div><div class="mc-val">7</div><div class="mc-sub warn">2 pending review</div></div>
-    <div class="mc"><div class="mc-lbl">Avg task progress</div><div class="mc-val">68%</div><div class="mc-sub" style="color:#9b9b98">across all teams</div></div>
-    <div class="mc"><div class="mc-lbl">Ending this month</div><div class="mc-val">5</div><div class="mc-sub warn">offboarding due</div></div>
-  </div>
-  <div class="g2">
-    <div class="card">
-      <div class="ch"><span class="ct">Recent applications</span><span class="ca" onclick="goTo('applications',null)">view all &rarr;</span></div>
-      <table><thead><tr><th>Applicant</th><th>Role</th><th>Stage</th></tr></thead><tbody>
-        <tr><td><div class="fr"><div class="av aw">FA</div>Fatima Abubakar</div></td><td class="m">Marketing</td><td><span class="pill pgy">Applied</span></td></tr>
-        <tr><td><div class="fr"><div class="av ab">AO</div>Amara Okafor</div></td><td class="m">Engineering</td><td><span class="pill pa">Review</span></td></tr>
-        <tr><td><div class="fr"><div class="av at">KI</div>Kemi Ige</div></td><td class="m">Design</td><td><span class="pill pb">Interview</span></td></tr>
-        <tr><td><div class="fr"><div class="av ar">TN</div>Tunde Nwosu</div></td><td class="m">Data</td><td><span class="pill pg">Offer sent</span></td></tr>
-      </tbody></table>
+<!-- ════════════ HR APP ════════════ -->
+<div id="hr-app">
+  <div class="hr-sidebar">
+    <div class="hr-brand">
+      <div class="hr-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="white"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".5"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".5"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".25"/></svg></div>
+      <div><div class="hr-brand-name">InternHub</div><div class="hr-brand-sub">HR Administration</div></div>
     </div>
-    <div class="card">
-      <div class="ch"><span class="ct">Activity</span></div>
-      <div class="tl"><div class="tld tlg"></div><div><div class="tlt">Tunde Nwosu accepted the data analyst offer.</div><div class="tls">2 hours ago</div></div></div>
-      <div class="tl"><div class="tld tlb"></div><div><div class="tlt">Kemi Ige interview scheduled for Friday.</div><div class="tls">5 hours ago</div></div></div>
-      <div class="tl"><div class="tld tla"></div><div><div class="tlt">3 tasks overdue in Product Design.</div><div class="tls">Yesterday</div></div></div>
-      <div class="tl"><div class="tld tlg"></div><div><div class="tlt">Chidi Eze completed onboarding.</div><div class="tls">2 days ago</div></div></div>
+    <div class="hr-nav-section">
+      <div class="hr-nav-lbl">Overview</div>
+      <div class="hr-nav-item active" onclick="hrNav('dashboard',this)"><svg viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>Dashboard</div>
     </div>
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">Intern progress</span><span class="ca" onclick="goTo('interns',null)">view all &rarr;</span></div>
-    <table><thead><tr><th>Name</th><th>Department</th><th>Duration</th><th>Progress</th><th>Status</th></tr></thead><tbody>
-      <tr><td><div class="fr"><div class="av ab">CE</div>Chidi Eze</div></td><td class="m">Engineering</td><td class="m">Jan 6 &ndash; Mar 28</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:82%"></div></div><span style="font-size:11px;color:#6b6b68;margin-left:5px">82%</span></div></td><td><span class="pill pg">On track</span></td></tr>
-      <tr><td><div class="fr"><div class="av aw">ZB</div>Zara Bello</div></td><td class="m">Design</td><td class="m">Jan 13 &ndash; Apr 4</td><td><div class="fr"><div class="pw"><div class="pb2 pbw" style="width:54%"></div></div><span style="font-size:11px;color:#6b6b68;margin-left:5px">54%</span></div></td><td><span class="pill pa">Behind</span></td></tr>
-      <tr><td><div class="fr"><div class="av at">NM</div>Ngozi Musa</div></td><td class="m">Marketing</td><td class="m">Feb 3 &ndash; Apr 25</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:67%"></div></div><span style="font-size:11px;color:#6b6b68;margin-left:5px">67%</span></div></td><td><span class="pill pg">On track</span></td></tr>
-      <tr><td><div class="fr"><div class="av ar">OA</div>Oluwaseun Adegoke</div></td><td class="m">Data</td><td class="m">Jan 20 &ndash; Mar 21</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:91%"></div></div><span style="font-size:11px;color:#6b6b68;margin-left:5px">91%</span></div></td><td><span class="pill pb">Completing</span></td></tr>
-    </tbody></table>
-  </div>
-</div>
-
-<!-- APPLICATIONS -->
-<div id="sec-applications" class="sec">
-  <div class="srow">
-    <input type="text" placeholder="Search applicants...">
-    <button class="flt on">All</button><button class="flt">Review</button><button class="flt">Interview</button><button class="flt">Offer</button>
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">All applications</span><button class="act pri">+ New application</button></div>
-    <table><thead><tr><th>Applicant</th><th>Role</th><th>Applied</th><th>Stage</th><th>Action</th></tr></thead><tbody>
-      <tr><td><div class="fr"><div class="av aw">FA</div><div><div>Fatima Abubakar</div><div style="font-size:10px;color:#9b9b98">fatima@email.com</div></div></div></td><td class="m">Marketing intern</td><td class="m">Mar 17</td><td><span class="pill pgy">Applied</span></td><td><button class="act">Review</button></td></tr>
-      <tr><td><div class="fr"><div class="av ab">AO</div><div><div>Amara Okafor</div><div style="font-size:10px;color:#9b9b98">amara@email.com</div></div></div></td><td class="m">Software eng. intern</td><td class="m">Mar 15</td><td><span class="pill pa">Under review</span></td><td><button class="act">Move to interview</button></td></tr>
-      <tr><td><div class="fr"><div class="av at">KI</div><div><div>Kemi Ige</div><div style="font-size:10px;color:#9b9b98">kemi@email.com</div></div></div></td><td class="m">UX design intern</td><td class="m">Mar 12</td><td><span class="pill pb">Interview</span></td><td><button class="act pri">Send offer</button></td></tr>
-      <tr><td><div class="fr"><div class="av ar">TN</div><div><div>Tunde Nwosu</div><div style="font-size:10px;color:#9b9b98">tunde@email.com</div></div></div></td><td class="m">Data analyst intern</td><td class="m">Mar 8</td><td><span class="pill pg">Offer sent</span></td><td><button class="act" disabled>Awaiting response</button></td></tr>
-      <tr><td><div class="fr"><div class="av ab">SB</div><div><div>Samuel Bright</div><div style="font-size:10px;color:#9b9b98">sam@email.com</div></div></div></td><td class="m">Backend eng. intern</td><td class="m">Mar 5</td><td><span class="pill pg">Accepted</span></td><td><button class="act pri">Onboard &rarr;</button></td></tr>
-    </tbody></table>
-  </div>
-</div>
-
-<!-- PIPELINE -->
-<div id="sec-pipeline" class="sec">
-  <div class="kb">
-    <div class="kbc"><div class="kbh">Applied <span class="pill pgy">4</span></div>
-      <div class="kbcard"><div class="kbn">Fatima Abubakar</div><div class="kbm">Marketing &middot; Mar 17</div></div>
-      <div class="kbcard"><div class="kbn">Lara Ojo</div><div class="kbm">Design &middot; Mar 16</div></div>
-      <div class="kbcard"><div class="kbn">Emeka Nze</div><div class="kbm">Engineering &middot; Mar 14</div></div>
+    <div class="hr-nav-section">
+      <div class="hr-nav-lbl">Recruitment</div>
+      <div class="hr-nav-item" onclick="hrNav('applications',this)"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/><path d="M4 5h6M4 7.5h6M4 10h3.5"/></svg>Applications<span class="hr-nbadge">7</span></div>
+      <div class="hr-nav-item" onclick="hrNav('pipeline',this)"><svg viewBox="0 0 14 14" fill="currentColor"><circle cx="2.5" cy="7" r="1.8"/><circle cx="7" cy="7" r="1.8"/><circle cx="11.5" cy="7" r="1.8"/></svg>Hiring pipeline</div>
     </div>
-    <div class="kbc"><div class="kbh">Under review <span class="pill pa">2</span></div>
-      <div class="kbcard"><div class="kbn">Amara Okafor</div><div class="kbm">Engineering &middot; Mar 15</div></div>
-      <div class="kbcard"><div class="kbn">Bisi Adewale</div><div class="kbm">Data &middot; Mar 10</div></div>
+    <div class="hr-nav-section">
+      <div class="hr-nav-lbl">Workforce</div>
+      <div class="hr-nav-item" onclick="hrNav('interns',this)"><svg viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="4.5" r="2.5"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>All interns</div>
+      <div class="hr-nav-item" onclick="hrNav('onboarding',this)"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/><path d="M4 7l2 2 4-4"/></svg>Onboarding<span class="hr-nbadge">3</span></div>
+      <div class="hr-nav-item" onclick="hrNav('attendance',this)"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="2.5" width="11" height="10" rx="1.5"/><path d="M4.5 1v3M9.5 1v3M1.5 6h11"/></svg>Attendance</div>
     </div>
-    <div class="kbc"><div class="kbh">Interview <span class="pill pb">1</span></div>
-      <div class="kbcard"><div class="kbn">Kemi Ige</div><div class="kbm">Design &middot; Fri Mar 21</div></div>
+    <div class="hr-nav-section">
+      <div class="hr-nav-lbl">Analytics</div>
+      <div class="hr-nav-item" onclick="hrNav('reports',this)"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/><path d="M4 10V7.5m2.5 2.5V5m2.5 5V7m2.5 3V6"/></svg>Reports</div>
     </div>
-    <div class="kbc"><div class="kbh">Offer <span class="pill pg">2</span></div>
-      <div class="kbcard"><div class="kbn">Tunde Nwosu</div><div class="kbm">Data &middot; Offer sent</div></div>
-      <div class="kbcard"><div class="kbn">Samuel Bright</div><div class="kbm">Engineering &middot; Accepted</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- INTERNS -->
-<div id="sec-interns" class="sec">
-  <div class="srow">
-    <input type="text" placeholder="Search interns...">
-    <button class="flt on">All</button><button class="flt">Engineering</button><button class="flt">Design</button><button class="flt">Data</button>
-  </div>
-  <div class="igrid">
-    <div class="icard"><div class="av ab">CE</div><div class="icn">Chidi Eze</div><div class="icd">Backend Engineering</div><div class="pw icp"><div class="pb2" style="width:82%"></div></div><div class="icpct">82% &middot; ends Mar 28</div><div style="margin-top:8px"><span class="pill pg">On track</span></div></div>
-    <div class="icard"><div class="av aw">ZB</div><div class="icn">Zara Bello</div><div class="icd">Product Design</div><div class="pw icp"><div class="pb2 pbw" style="width:54%"></div></div><div class="icpct">54% &middot; ends Apr 4</div><div style="margin-top:8px"><span class="pill pa">Behind</span></div></div>
-    <div class="icard"><div class="av at">NM</div><div class="icn">Ngozi Musa</div><div class="icd">Marketing</div><div class="pw icp"><div class="pb2" style="width:67%"></div></div><div class="icpct">67% &middot; ends Apr 25</div><div style="margin-top:8px"><span class="pill pg">On track</span></div></div>
-    <div class="icard"><div class="av ar">OA</div><div class="icn">Oluwaseun Adegoke</div><div class="icd">Data Analytics</div><div class="pw icp"><div class="pb2" style="width:91%"></div></div><div class="icpct">91% &middot; ends Mar 21</div><div style="margin-top:8px"><span class="pill pb">Completing</span></div></div>
-    <div class="icard"><div class="av ab">IW</div><div class="icn">Ibrahim Wale</div><div class="icd">Frontend Eng.</div><div class="pw icp"><div class="pb2 pbw" style="width:45%"></div></div><div class="icpct">45% &middot; ends May 2</div><div style="margin-top:8px"><span class="pill pa">Behind</span></div></div>
-    <div class="icard"><div class="av at">AP</div><div class="icn">Ada Peters</div><div class="icd">Product Mgmt</div><div class="pw icp"><div class="pb2" style="width:72%"></div></div><div class="icpct">72% &middot; ends Apr 18</div><div style="margin-top:8px"><span class="pill pg">On track</span></div></div>
-  </div>
-</div>
-
-<!-- ONBOARDING -->
-<div id="sec-onboarding" class="sec">
-  <div class="card">
-    <div class="ch"><span class="ct">Samuel Bright &mdash; onboarding</span><span class="pill pb">Step 3 of 5</span></div>
-    <div class="onb">
-      <div class="onb-step done"><div class="onb-c">&#10003;</div><div class="onb-l">Offer signed</div></div>
-      <div class="onb-step done"><div class="onb-c">&#10003;</div><div class="onb-l">Documents</div></div>
-      <div class="onb-step active"><div class="onb-c">3</div><div class="onb-l">IT setup</div></div>
-      <div class="onb-step"><div class="onb-c">4</div><div class="onb-l">Orientation</div></div>
-      <div class="onb-step"><div class="onb-c">5</div><div class="onb-l">First day</div></div>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="act">Mark step complete</button><button class="act pri">Send IT setup email</button></div>
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">All onboarding</span></div>
-    <table><thead><tr><th>Intern</th><th>Role</th><th>Start date</th><th>Progress</th><th>Status</th></tr></thead><tbody>
-      <tr><td><div class="fr"><div class="av ab">SB</div>Samuel Bright</div></td><td class="m">Backend Eng.</td><td class="m">Mar 24</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:60%"></div></div><span style="font-size:10px;color:#6b6b68;margin-left:5px">3/5</span></div></td><td><span class="pill pb">In progress</span></td></tr>
-      <tr><td><div class="fr"><div class="av at">KI</div>Kemi Ige</div></td><td class="m">UX Design</td><td class="m">Mar 31</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:20%"></div></div><span style="font-size:10px;color:#6b6b68;margin-left:5px">1/5</span></div></td><td><span class="pill pgy">Not started</span></td></tr>
-      <tr><td><div class="fr"><div class="av ar">TN</div>Tunde Nwosu</div></td><td class="m">Data Analyst</td><td class="m">Apr 1</td><td><div class="fr"><div class="pw"><div class="pb2" style="width:0%"></div></div><span style="font-size:10px;color:#6b6b68;margin-left:5px">0/5</span></div></td><td><span class="pill pgy">Pending</span></td></tr>
-    </tbody></table>
-  </div>
-</div>
-
-<!-- ATTENDANCE -->
-<div id="sec-attendance" class="sec">
-  <div class="metrics m3">
-    <div class="mc"><div class="mc-lbl">Present today</div><div class="mc-val">19</div><div class="mc-sub" style="color:#9b9b98">of 24 active</div></div>
-    <div class="mc"><div class="mc-lbl">Avg attendance (Mar)</div><div class="mc-val">87%</div><div class="mc-sub good">above 80% target</div></div>
-    <div class="mc"><div class="mc-lbl">Late this week</div><div class="mc-val">4</div><div class="mc-sub warn">needs attention</div></div>
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">Today &mdash; March 18, 2026</span></div>
-    <table><thead><tr><th>Intern</th><th>Department</th><th>Check in</th><th>Check out</th><th>Hours</th><th>Status</th></tr></thead><tbody>
-      <tr><td><div class="fr"><div class="av ab">CE</div>Chidi Eze</div></td><td class="m">Engineering</td><td>09:02</td><td>&mdash;</td><td class="m">5h 30m</td><td><span class="pill pg">Present</span></td></tr>
-      <tr><td><div class="fr"><div class="av aw">ZB</div>Zara Bello</div></td><td class="m">Design</td><td>09:47</td><td>&mdash;</td><td class="m">4h 45m</td><td><span class="pill pa">Late</span></td></tr>
-      <tr><td><div class="fr"><div class="av at">NM</div>Ngozi Musa</div></td><td class="m">Marketing</td><td>08:58</td><td>&mdash;</td><td class="m">5h 34m</td><td><span class="pill pg">Present</span></td></tr>
-      <tr><td><div class="fr"><div class="av ab">IW</div>Ibrahim Wale</div></td><td class="m">Engineering</td><td>&mdash;</td><td>&mdash;</td><td class="m">&mdash;</td><td><span class="pill pr">Absent</span></td></tr>
-      <tr><td><div class="fr"><div class="av at">AP</div>Ada Peters</div></td><td class="m">Product</td><td>09:05</td><td>&mdash;</td><td class="m">5h 27m</td><td><span class="pill pg">Present</span></td></tr>
-    </tbody></table>
-  </div>
-</div>
-
-<!-- TASKS -->
-<div id="sec-tasks" class="sec">
-  <div class="srow">
-    <input type="text" placeholder="Search tasks...">
-    <button class="flt on">All</button><button class="flt">Overdue</button><button class="flt">In progress</button><button class="flt">Done</button>
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">All tasks</span><button class="act pri">+ Assign task</button></div>
-    <table><thead><tr><th>Task</th><th>Assigned to</th><th>Project</th><th>Due</th><th>Priority</th><th>Status</th></tr></thead><tbody>
-      <tr><td style="font-weight:600">Build REST API for auth module</td><td><div class="fr"><div class="av ab" style="width:24px;height:24px;font-size:9px">CE</div>Chidi Eze</div></td><td class="m">Backend</td><td class="m">Mar 22</td><td><span class="pill pr">High</span></td><td><span class="pill pb">In progress</span></td></tr>
-      <tr><td style="font-weight:600">Redesign onboarding flow</td><td><div class="fr"><div class="av aw" style="width:24px;height:24px;font-size:9px">ZB</div>Zara Bello</div></td><td class="m">Product Design</td><td class="m">Mar 19</td><td><span class="pill pr">High</span></td><td><span class="pill pa">Overdue</span></td></tr>
-      <tr><td style="font-weight:600">Q1 social media report</td><td><div class="fr"><div class="av at" style="width:24px;height:24px;font-size:9px">NM</div>Ngozi Musa</div></td><td class="m">Marketing</td><td class="m">Mar 28</td><td><span class="pill pa">Medium</span></td><td><span class="pill pb">In progress</span></td></tr>
-      <tr><td style="font-weight:600">Customer churn analysis</td><td><div class="fr"><div class="av ar" style="width:24px;height:24px;font-size:9px">OA</div>Oluwaseun Adegoke</div></td><td class="m">Data</td><td class="m">Mar 21</td><td><span class="pill pr">High</span></td><td><span class="pill pg">Complete</span></td></tr>
-      <tr><td style="font-weight:600">Implement dark mode toggle</td><td><div class="fr"><div class="av ab" style="width:24px;height:24px;font-size:9px">IW</div>Ibrahim Wale</div></td><td class="m">Frontend</td><td class="m">Apr 1</td><td><span class="pill pgy">Low</span></td><td><span class="pill pa">Overdue</span></td></tr>
-    </tbody></table>
-  </div>
-</div>
-
-<!-- INTERN HOME -->
-<div id="sec-intern-home" class="sec">
-  <div class="metrics m3">
-    <div class="mc"><div class="mc-lbl">My progress</div><div class="mc-val">82%</div><div class="mc-sub good">on track</div></div>
-    <div class="mc"><div class="mc-lbl">Tasks pending</div><div class="mc-val">4</div><div class="mc-sub warn">1 due tomorrow</div></div>
-    <div class="mc"><div class="mc-lbl">Days remaining</div><div class="mc-val">10</div><div class="mc-sub" style="color:#9b9b98">ends Mar 28</div></div>
-  </div>
-  <div class="g2">
-    <div class="card">
-      <div class="ch"><span class="ct">My profile</span></div>
-      <div class="fr" style="gap:12px;margin-bottom:14px">
-        <div class="av ab" style="width:44px;height:44px;font-size:15px;flex-shrink:0">CE</div>
-        <div><div style="font-size:14px;font-weight:700">Chidi Eze</div><div style="font-size:11px;color:#6b6b68;margin-top:2px">Backend Engineering &middot; Cohort Jan 2026</div></div>
-      </div>
-      <table style="font-size:12px">
-        <tr><td style="color:#6b6b68;padding:4px 12px 4px 0;border:none;white-space:nowrap">Manager</td><td style="padding:4px 0;border:none;font-weight:600">Tobi Kolade</td></tr>
-        <tr><td style="color:#6b6b68;padding:4px 12px 4px 0;border:none">Start date</td><td style="padding:4px 0;border:none">Jan 6, 2026</td></tr>
-        <tr><td style="color:#6b6b68;padding:4px 12px 4px 0;border:none">End date</td><td style="padding:4px 0;border:none">Mar 28, 2026</td></tr>
-        <tr><td style="color:#6b6b68;padding:4px 12px 4px 0;border:none">Team</td><td style="padding:4px 0;border:none">Platform Engineering</td></tr>
-      </table>
-    </div>
-    <div class="card">
-      <div class="ch"><span class="ct">Onboarding checklist</span><span class="pill pg">4/5 done</span></div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="fr" style="gap:10px"><div class="tck done"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l1.5 1.5 3.5-3" stroke="white" stroke-width="1.5"/></svg></div><span style="font-size:12px;color:#9b9b98;text-decoration:line-through">Sign offer letter</span></div>
-        <div class="fr" style="gap:10px"><div class="tck done"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l1.5 1.5 3.5-3" stroke="white" stroke-width="1.5"/></svg></div><span style="font-size:12px;color:#9b9b98;text-decoration:line-through">Submit ID documents</span></div>
-        <div class="fr" style="gap:10px"><div class="tck done"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l1.5 1.5 3.5-3" stroke="white" stroke-width="1.5"/></svg></div><span style="font-size:12px;color:#9b9b98;text-decoration:line-through">Complete IT setup</span></div>
-        <div class="fr" style="gap:10px"><div class="tck done"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l1.5 1.5 3.5-3" stroke="white" stroke-width="1.5"/></svg></div><span style="font-size:12px;color:#9b9b98;text-decoration:line-through">Attend orientation</span></div>
-        <div class="fr" style="gap:10px"><div class="tck"></div><span style="font-size:12px;color:#1a1a18;font-weight:600">Complete code review training</span></div>
+    <div class="hr-sidebar-footer">
+      <div class="hr-user">
+        <div class="hr-uav">SA</div>
+        <div><div class="hr-uname">Sarah Adeyemi</div><div class="hr-urole">HR Manager</div></div>
+        <button class="hr-logout" onclick="logout()" title="Sign out"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.5 2H2a1 1 0 00-1 1v6a1 1 0 001 1h2.5M8 4l2 2-2 2M10 6H5"/></svg></button>
       </div>
     </div>
   </div>
-</div>
+  <div class="hr-main">
+    <div class="hr-topbar">
+      <div class="hr-page-title" id="hr-page-title">Dashboard</div>
+      <button class="hr-btn" onclick="toast('Exporting data...','s')">Export CSV</button>
+      <button class="hr-btn pri" id="hr-cta" onclick="openModal('hr-modal')">+ New application</button>
+    </div>
+    <div class="hr-content">
 
-<!-- INTERN TASKS -->
-<div id="sec-intern-tasks" class="sec">
-  <div class="card">
-    <div class="ch"><span class="ct">My tasks</span><span class="pill pb">2 of 6 done</span></div>
-    <div class="trow"><div class="tck done"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l1.5 1.5 3.5-3" stroke="white" stroke-width="1.5"/></svg></div><span class="tname done">Set up local dev environment</span><span class="tdue" style="color:#15803d">Done</span></div>
-    <div class="trow"><div class="tck done"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l1.5 1.5 3.5-3" stroke="white" stroke-width="1.5"/></svg></div><span class="tname done">Write unit tests for login module</span><span class="tdue" style="color:#15803d">Done</span></div>
-    <div class="trow"><div class="tck"></div><span class="tname">Build REST API for auth module</span><span class="tdue w">Mar 22</span></div>
-    <div class="trow"><div class="tck"></div><span class="tname">Write API documentation</span><span class="tdue">Mar 26</span></div>
-    <div class="trow"><div class="tck"></div><span class="tname">Final project presentation</span><span class="tdue">Mar 27</span></div>
-    <div class="trow"><div class="tck"></div><span class="tname">Submit end-of-internship report</span><span class="tdue">Mar 28</span></div>
+      <!-- HR Dashboard -->
+      <div id="hr-sec-dashboard" class="hr-sec on">
+        <div class="hr-metrics">
+          <div class="hr-mc"><div class="hr-mc-lbl">Active interns</div><div class="hr-mc-val">24</div><div class="hr-mc-sub g">▲ +3 this month</div></div>
+          <div class="hr-mc"><div class="hr-mc-lbl">Open applications</div><div class="hr-mc-val">7</div><div class="hr-mc-sub w">2 pending review</div></div>
+          <div class="hr-mc"><div class="hr-mc-lbl">Avg progress</div><div class="hr-mc-val">68%</div><div class="hr-mc-sub" style="color:#9ca3af">across teams</div></div>
+          <div class="hr-mc"><div class="hr-mc-lbl">Ending this month</div><div class="hr-mc-val">5</div><div class="hr-mc-sub r">offboarding due</div></div>
+        </div>
+        <div class="hr-g2">
+          <div class="hr-card">
+            <div class="hr-ch"><span class="hr-ct">Recent applications</span><span class="hr-ca" onclick="hrNav('applications',null)">View all →</span></div>
+            <table class="hr-table"><thead><tr><th>Applicant</th><th>Role</th><th>Stage</th></tr></thead><tbody>
+              <tr><td><div class="fr"><div class="av aw">FA</div><div><div style="font-weight:700">Fatima A.</div><div style="font-size:10px;color:#9ca3af">Marketing</div></div></div></td><td></td><td><span class="pill pgy">Applied</span></td></tr>
+              <tr><td><div class="fr"><div class="av ab">AO</div><div><div style="font-weight:700">Amara O.</div><div style="font-size:10px;color:#9ca3af">Engineering</div></div></td><td></td><td><span class="pill pa">Review</span></td></tr>
+              <tr><td><div class="fr"><div class="av at">KI</div><div><div style="font-weight:700">Kemi I.</div><div style="font-size:10px;color:#9ca3af">Design</div></div></td><td></td><td><span class="pill pb">Interview</span></td></tr>
+              <tr><td><div class="fr"><div class="av ar">TN</div><div><div style="font-weight:700">Tunde N.</div><div style="font-size:10px;color:#9ca3af">Data</div></div></td><td></td><td><span class="pill pg">Offer sent</span></td></tr>
+            </tbody></table>
+          </div>
+          <div class="hr-card">
+            <div class="hr-ch"><span class="hr-ct">Activity</span></div>
+            <div class="hr-tl"><div class="hr-tld" style="background:#16a34a"></div><div><div style="font-size:12px;font-weight:600;color:#111827">Tunde Nwosu accepted data analyst offer.</div><div style="font-size:10px;color:#9ca3af;margin-top:2px">2 hours ago</div></div></div>
+            <div class="hr-tl"><div class="hr-tld" style="background:#2563eb"></div><div><div style="font-size:12px;font-weight:600;color:#111827">Kemi Ige interview scheduled — Fri 10am.</div><div style="font-size:10px;color:#9ca3af;margin-top:2px">5 hours ago</div></div></div>
+            <div class="hr-tl"><div class="hr-tld" style="background:#d97706"></div><div><div style="font-size:12px;font-weight:600;color:#111827">3 tasks overdue in Product Design.</div><div style="font-size:10px;color:#9ca3af;margin-top:2px">Yesterday</div></div></div>
+            <div class="hr-tl"><div class="hr-tld" style="background:#16a34a"></div><div><div style="font-size:12px;font-weight:600;color:#111827">Chidi Eze completed onboarding.</div><div style="font-size:10px;color:#9ca3af;margin-top:2px">2 days ago</div></div></div>
+            <div class="hr-tl"><div class="hr-tld" style="background:#dc2626"></div><div><div style="font-size:12px;font-weight:600;color:#111827">Ibrahim Wale absent — 2nd time this week.</div><div style="font-size:10px;color:#9ca3af;margin-top:2px">2 days ago</div></div></div>
+          </div>
+        </div>
+        <div class="hr-card">
+          <div class="hr-ch"><span class="hr-ct">Intern progress</span><span class="hr-ca" onclick="hrNav('interns',null)">View all →</span></div>
+          <table class="hr-table"><thead><tr><th>Name</th><th>Dept</th><th>Duration</th><th>Progress</th><th>Status</th><th></th></tr></thead><tbody>
+            <tr><td><div class="fr"><div class="av ab">CE</div><div><div style="font-weight:700">Chidi Eze</div><div style="font-size:10px;color:#9ca3af">Backend Eng.</div></div></div></td><td class="tm">Engineering</td><td class="tm">Jan 6 – Mar 28</td><td style="min-width:120px"><div class="fr"><div class="pw"><div class="pb2 grn" style="width:82%"></div></div><span style="font-size:11px;color:#374151;margin-left:5px;font-weight:700">82%</span></div></td><td><span class="pill pg">On track</span></td><td><button class="hr-btn" style="padding:4px 9px;font-size:10px" onclick="toast('Viewing Chidi profile','')">View</button></td></tr>
+            <tr><td><div class="fr"><div class="av aw">ZB</div><div><div style="font-weight:700">Zara Bello</div><div style="font-size:10px;color:#9ca3af">Product Design</div></div></div></td><td class="tm">Design</td><td class="tm">Jan 13 – Apr 4</td><td style="min-width:120px"><div class="fr"><div class="pw"><div class="pb2 amb" style="width:54%"></div></div><span style="font-size:11px;color:#374151;margin-left:5px;font-weight:700">54%</span></div></td><td><span class="pill pa">Behind</span></td><td><button class="hr-btn" style="padding:4px 9px;font-size:10px" onclick="toast('Viewing Zara profile','')">View</button></td></tr>
+            <tr><td><div class="fr"><div class="av at">NM</div><div><div style="font-weight:700">Ngozi Musa</div><div style="font-size:10px;color:#9ca3af">Marketing</div></div></div></td><td class="tm">Marketing</td><td class="tm">Feb 3 – Apr 25</td><td style="min-width:120px"><div class="fr"><div class="pw"><div class="pb2 grn" style="width:67%"></div></div><span style="font-size:11px;color:#374151;margin-left:5px;font-weight:700">67%</span></div></td><td><span class="pill pg">On track</span></td><td><button class="hr-btn" style="padding:4px 9px;font-size:10px" onclick="toast('Viewing Ngozi profile','')">View</button></td></tr>
+            <tr><td><div class="fr"><div class="av ar">OA</div><div><div style="font-weight:700">Oluwaseun A.</div><div style="font-size:10px;color:#9ca3af">Data</div></div></div></td><td class="tm">Data</td><td class="tm">Jan 20 – Mar 21</td><td style="min-width:120px"><div class="fr"><div class="pw"><div class="pb2 grn" style="width:91%"></div></div><span style="font-size:11px;color:#374151;margin-left:5px;font-weight:700">91%</span></div></td><td><span class="pill pb">Completing</span></td><td><button class="hr-btn" style="padding:4px 9px;font-size:10px" onclick="toast('Viewing profile','')">View</button></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- HR Applications -->
+      <div id="hr-sec-applications" class="hr-sec">
+        <div class="hr-srow">
+          <input class="hr-sinput" type="text" placeholder="Search applicants..." oninput="filterTbl(this,'hr-app-tb')">
+          <button class="hr-flt on" onclick="fltBtn(this)">All</button>
+          <button class="hr-flt" onclick="fltBtn(this)">Applied</button>
+          <button class="hr-flt" onclick="fltBtn(this)">Review</button>
+          <button class="hr-flt" onclick="fltBtn(this)">Interview</button>
+          <button class="hr-flt" onclick="fltBtn(this)">Offer</button>
+        </div>
+        <div class="hr-card">
+          <div class="hr-ch"><span class="hr-ct">All applications</span><button class="hr-btn pri" onclick="openModal('hr-modal')">+ New application</button></div>
+          <table class="hr-table"><thead><tr><th>Applicant</th><th>Role</th><th>Applied</th><th>Dept</th><th>Stage</th><th>Action</th></tr></thead>
+          <tbody id="hr-app-tb">
+            <tr><td><div class="fr"><div class="av aw">FA</div><div><div style="font-weight:700">Fatima Abubakar</div><div style="font-size:10px;color:#9ca3af">fatima@email.com</div></div></div></td><td class="tm">Marketing intern</td><td class="tm">Mar 17</td><td class="tm">Marketing</td><td><span class="pill pgy">Applied</span></td><td><button class="hr-btn" style="font-size:10px;padding:4px 9px" onclick="toast('Moving to review','')">Review</button></td></tr>
+            <tr><td><div class="fr"><div class="av ab">AO</div><div><div style="font-weight:700">Amara Okafor</div><div style="font-size:10px;color:#9ca3af">amara@email.com</div></div></div></td><td class="tm">Software eng. intern</td><td class="tm">Mar 15</td><td class="tm">Engineering</td><td><span class="pill pa">Under review</span></td><td><button class="hr-btn" style="font-size:10px;padding:4px 9px" onclick="toast('Scheduling interview','')">Interview</button></td></tr>
+            <tr><td><div class="fr"><div class="av at">KI</div><div><div style="font-weight:700">Kemi Ige</div><div style="font-size:10px;color:#9ca3af">kemi@email.com</div></div></div></td><td class="tm">UX design intern</td><td class="tm">Mar 12</td><td class="tm">Design</td><td><span class="pill pb">Interview</span></td><td><button class="hr-btn pri" style="font-size:10px;padding:4px 9px" onclick="toast('Offer sent to Kemi!','s')">Send offer</button></td></tr>
+            <tr><td><div class="fr"><div class="av ar">TN</div><div><div style="font-weight:700">Tunde Nwosu</div><div style="font-size:10px;color:#9ca3af">tunde@email.com</div></div></div></td><td class="tm">Data analyst intern</td><td class="tm">Mar 8</td><td class="tm">Data</td><td><span class="pill pg">Offer sent</span></td><td><button class="hr-btn" style="font-size:10px;padding:4px 9px;opacity:.5" disabled>Awaiting</button></td></tr>
+            <tr><td><div class="fr"><div class="av ab">SB</div><div><div style="font-weight:700">Samuel Bright</div><div style="font-size:10px;color:#9ca3af">sam@email.com</div></div></div></td><td class="tm">Backend eng. intern</td><td class="tm">Mar 5</td><td class="tm">Engineering</td><td><span class="pill pg">Accepted</span></td><td><button class="hr-btn grn" style="font-size:10px;padding:4px 9px" onclick="toast('Onboarding started for Samuel','s')">Onboard →</button></td></tr>
+            <tr><td><div class="fr"><div class="av ap">LO</div><div><div style="font-weight:700">Lara Ojo</div><div style="font-size:10px;color:#9ca3af">lara@email.com</div></div></div></td><td class="tm">Product design intern</td><td class="tm">Mar 16</td><td class="tm">Design</td><td><span class="pill pgy">Applied</span></td><td><button class="hr-btn" style="font-size:10px;padding:4px 9px" onclick="toast('Moving to review','')">Review</button></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- HR Pipeline -->
+      <div id="hr-sec-pipeline" class="hr-sec">
+        <div class="hr-kb">
+          <div class="hr-kbc"><div class="hr-kbh">Applied <span class="pill pgy">4</span></div>
+            <div class="hr-kbcard"><div class="hr-kbn">Fatima Abubakar</div><div class="hr-kbm">Marketing · Mar 17</div></div>
+            <div class="hr-kbcard"><div class="hr-kbn">Lara Ojo</div><div class="hr-kbm">Design · Mar 16</div></div>
+            <div class="hr-kbcard"><div class="hr-kbn">Emeka Nze</div><div class="hr-kbm">Engineering · Mar 14</div></div>
+            <div class="hr-kbcard"><div class="hr-kbn">Bisi Adewale</div><div class="hr-kbm">Data · Mar 10</div></div>
+          </div>
+          <div class="hr-kbc"><div class="hr-kbh">Review <span class="pill pa">2</span></div>
+            <div class="hr-kbcard"><div class="hr-kbn">Amara Okafor</div><div class="hr-kbm">Engineering · Mar 15</div></div>
+            <div class="hr-kbcard"><div class="hr-kbn">Yemi Lawal</div><div class="hr-kbm">Marketing · Mar 11</div></div>
+          </div>
+          <div class="hr-kbc"><div class="hr-kbh">Interview <span class="pill pb">1</span></div>
+            <div class="hr-kbcard"><div class="hr-kbn">Kemi Ige</div><div class="hr-kbm">Design · Fri Mar 21 · 10am</div></div>
+          </div>
+          <div class="hr-kbc"><div class="hr-kbh">Offer <span class="pill pg">2</span></div>
+            <div class="hr-kbcard" style="border-left:3px solid #16a34a"><div class="hr-kbn">Samuel Bright</div><div class="hr-kbm">Engineering · Accepted ✓</div></div>
+            <div class="hr-kbcard"><div class="hr-kbn">Tunde Nwosu</div><div class="hr-kbm">Data · Offer sent Mar 18</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HR Interns -->
+      <div id="hr-sec-interns" class="hr-sec">
+        <div class="hr-srow">
+          <input class="hr-sinput" type="text" placeholder="Search interns..." oninput="filterCards(this,'hr-igrid')">
+          <button class="hr-flt on" onclick="fltBtn(this)">All depts</button>
+          <button class="hr-flt" onclick="fltBtn(this)">Engineering</button>
+          <button class="hr-flt" onclick="fltBtn(this)">Design</button>
+          <button class="hr-flt" onclick="fltBtn(this)">Data</button>
+        </div>
+        <div class="igrid" id="hr-igrid">
+          <div class="icard"><div class="av ab">CE</div><div class="ic-name">Chidi Eze</div><div class="ic-dept">Backend Eng.</div><div class="pw" style="margin:6px 0 3px"><div class="pb2 grn" style="width:82%"></div></div><div style="font-size:10px;color:#6b7280">82% · Mar 28</div><div style="margin-top:7px"><span class="pill pg">On track</span></div></div>
+          <div class="icard"><div class="av aw">ZB</div><div class="ic-name">Zara Bello</div><div class="ic-dept">Product Design</div><div class="pw" style="margin:6px 0 3px"><div class="pb2 amb" style="width:54%"></div></div><div style="font-size:10px;color:#6b7280">54% · Apr 4</div><div style="margin-top:7px"><span class="pill pa">Behind</span></div></div>
+          <div class="icard"><div class="av at">NM</div><div class="ic-name">Ngozi Musa</div><div class="ic-dept">Marketing</div><div class="pw" style="margin:6px 0 3px"><div class="pb2 grn" style="width:67%"></div></div><div style="font-size:10px;color:#6b7280">67% · Apr 25</div><div style="margin-top:7px"><span class="pill pg">On track</span></div></div>
+          <div class="icard"><div class="av ar">OA</div><div class="ic-name">Oluwaseun A.</div><div class="ic-dept">Data Analytics</div><div class="pw" style="margin:6px 0 3px"><div class="pb2 grn" style="width:91%"></div></div><div style="font-size:10px;color:#6b7280">91% · Mar 21</div><div style="margin-top:7px"><span class="pill pb">Completing</span></div></div>
+          <div class="icard"><div class="av ab">IW</div><div class="ic-name">Ibrahim Wale</div><div class="ic-dept">Frontend Eng.</div><div class="pw" style="margin:6px 0 3px"><div class="pb2 amb" style="width:45%"></div></div><div style="font-size:10px;color:#6b7280">45% · May 2</div><div style="margin-top:7px"><span class="pill pa">Behind</span></div></div>
+          <div class="icard"><div class="av at">AP</div><div class="ic-name">Ada Peters</div><div class="ic-dept">Product Mgmt</div><div class="pw" style="margin:6px 0 3px"><div class="pb2 grn" style="width:72%"></div></div><div style="font-size:10px;color:#6b7280">72% · Apr 18</div><div style="margin-top:7px"><span class="pill pg">On track</span></div></div>
+          <div class="icard"><div class="av ap">RO</div><div class="ic-name">Rahim Osei</div><div class="ic-dept">Data Eng.</div><div class="pw" style="margin:6px 0 3px"><div class="pb2 grn" style="width:60%"></div></div><div style="font-size:10px;color:#6b7280">60% · Apr 30</div><div style="margin-top:7px"><span class="pill pg">On track</span></div></div>
+          <div class="icard"><div class="av aw">TA</div><div class="ic-name">Temi Alade</div><div class="ic-dept">Marketing</div><div class="pw" style="margin:6px 0 3px"><div class="pb2 grn" style="width:78%"></div></div><div style="font-size:10px;color:#6b7280">78% · Apr 11</div><div style="margin-top:7px"><span class="pill pg">On track</span></div></div>
+        </div>
+      </div>
+
+      <!-- HR Onboarding -->
+      <div id="hr-sec-onboarding" class="hr-sec">
+        <div class="hr-card">
+          <div class="hr-ch"><span class="hr-ct">Samuel Bright — IT setup step</span><span class="pill pb">3 of 5</span></div>
+          <div class="onb-bar">
+            <div class="onb-step done"><div class="onb-c">✓</div><div class="onb-l">Offer signed</div></div>
+            <div class="onb-step done"><div class="onb-c">✓</div><div class="onb-l">Documents</div></div>
+            <div class="onb-step active"><div class="onb-c">3</div><div class="onb-l">IT setup</div></div>
+            <div class="onb-step"><div class="onb-c">4</div><div class="onb-l">Orientation</div></div>
+            <div class="onb-step"><div class="onb-c">5</div><div class="onb-l">First day</div></div>
+          </div>
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:3px">Current: IT setup</div><div style="font-size:11px;color:#3b82f6">Provision laptop, email, repo access, and required software. Typically 1–2 business days.</div></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="hr-btn" onclick="toast('Reminder sent to Samuel','s')">Send reminder</button>
+            <button class="hr-btn pri" onclick="toast('Step marked complete!','s')">Mark step done</button>
+          </div>
+        </div>
+        <div class="hr-card">
+          <div class="hr-ch"><span class="hr-ct">All onboarding</span></div>
+          <table class="hr-table"><thead><tr><th>Intern</th><th>Role</th><th>Start</th><th>Steps</th><th>Status</th></tr></thead><tbody>
+            <tr><td><div class="fr"><div class="av ab">SB</div>Samuel Bright</div></td><td class="tm">Backend Eng.</td><td class="tm">Mar 24</td><td><div class="fr"><div class="pw"><div class="pb2 blu" style="width:60%"></div></div><span style="font-size:11px;color:#374151;font-weight:700;margin-left:5px">3/5</span></div></td><td><span class="pill pb">In progress</span></td></tr>
+            <tr><td><div class="fr"><div class="av at">KI</div>Kemi Ige</div></td><td class="tm">UX Design</td><td class="tm">Mar 31</td><td><div class="fr"><div class="pw"><div class="pb2 blu" style="width:20%"></div></div><span style="font-size:11px;color:#374151;font-weight:700;margin-left:5px">1/5</span></div></td><td><span class="pill pgy">Not started</span></td></tr>
+            <tr><td><div class="fr"><div class="av ar">TN</div>Tunde Nwosu</div></td><td class="tm">Data Analyst</td><td class="tm">Apr 1</td><td><div class="fr"><div class="pw"><div class="pb2 blu" style="width:0%"></div></div><span style="font-size:11px;color:#374151;font-weight:700;margin-left:5px">0/5</span></div></td><td><span class="pill pgy">Pending</span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- HR Attendance -->
+      <div id="hr-sec-attendance" class="hr-sec">
+        <div class="hr-metrics" style="grid-template-columns:repeat(3,1fr)">
+          <div class="hr-mc"><div class="hr-mc-lbl">Present today</div><div class="hr-mc-val">19</div><div class="hr-mc-sub" style="color:#9ca3af">of 24 interns</div></div>
+          <div class="hr-mc"><div class="hr-mc-lbl">Avg attendance (Mar)</div><div class="hr-mc-val">87%</div><div class="hr-mc-sub g">above 80% target</div></div>
+          <div class="hr-mc"><div class="hr-mc-lbl">Late arrivals this week</div><div class="hr-mc-val">4</div><div class="hr-mc-sub w">flag for review</div></div>
+        </div>
+        <div class="hr-card">
+          <div class="hr-ch"><span class="hr-ct">Today — Monday, March 23, 2026</span><button class="hr-btn" onclick="toast('Downloading CSV...','s')">Export</button></div>
+          <table class="hr-table"><thead><tr><th>Intern</th><th>Dept</th><th>Check in</th><th>Check out</th><th>Hours</th><th>Status</th></tr></thead><tbody>
+            <tr><td><div class="fr"><div class="av ab">CE</div>Chidi Eze</div></td><td class="tm">Engineering</td><td>09:02</td><td>—</td><td class="tm">5h 30m</td><td><span class="pill pg">Present</span></td></tr>
+            <tr><td><div class="fr"><div class="av aw">ZB</div>Zara Bello</div></td><td class="tm">Design</td><td>09:47</td><td>—</td><td class="tm">4h 45m</td><td><span class="pill pa">Late</span></td></tr>
+            <tr><td><div class="fr"><div class="av at">NM</div>Ngozi Musa</div></td><td class="tm">Marketing</td><td>08:58</td><td>—</td><td class="tm">5h 34m</td><td><span class="pill pg">Present</span></td></tr>
+            <tr><td><div class="fr"><div class="av ab">IW</div>Ibrahim Wale</div></td><td class="tm">Engineering</td><td>—</td><td>—</td><td class="tm">—</td><td><span class="pill pr">Absent</span></td></tr>
+            <tr><td><div class="fr"><div class="av at">AP</div>Ada Peters</div></td><td class="tm">Product</td><td>09:05</td><td>—</td><td class="tm">5h 27m</td><td><span class="pill pg">Present</span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- HR Reports -->
+      <div id="hr-sec-reports" class="hr-sec">
+        <div class="hr-g2">
+          <div class="hr-card">
+            <div class="hr-ch"><span class="hr-ct">Progress by department</span></div>
+            <div class="dept-row"><div class="dept-nm">Engineering</div><div class="dept-bw"><div class="dept-bf" style="width:76%;background:#2563eb"></div></div><div class="dept-pct">76%</div></div>
+            <div class="dept-row"><div class="dept-nm">Design</div><div class="dept-bw"><div class="dept-bf" style="width:54%;background:#d97706"></div></div><div class="dept-pct">54%</div></div>
+            <div class="dept-row"><div class="dept-nm">Marketing</div><div class="dept-bw"><div class="dept-bf" style="width:74%;background:#16a34a"></div></div><div class="dept-pct">74%</div></div>
+            <div class="dept-row"><div class="dept-nm">Data</div><div class="dept-bw"><div class="dept-bf" style="width:88%;background:#16a34a"></div></div><div class="dept-pct">88%</div></div>
+            <div class="dept-row"><div class="dept-nm">Product</div><div class="dept-bw"><div class="dept-bf" style="width:65%;background:#7c3aed"></div></div><div class="dept-pct">65%</div></div>
+          </div>
+          <div class="hr-card">
+            <div class="hr-ch"><span class="hr-ct">Cohort summary</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="hr-mc"><div class="hr-mc-lbl">Total</div><div class="hr-mc-val" style="font-size:22px">24</div></div>
+              <div class="hr-mc"><div class="hr-mc-lbl">On track</div><div class="hr-mc-val" style="font-size:22px;color:#16a34a">16</div></div>
+              <div class="hr-mc"><div class="hr-mc-lbl">Behind</div><div class="hr-mc-val" style="font-size:22px;color:#d97706">5</div></div>
+              <div class="hr-mc"><div class="hr-mc-lbl">Completing</div><div class="hr-mc-val" style="font-size:22px;color:#2563eb">3</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="hr-card">
+          <div class="hr-ch"><span class="hr-ct">Exports</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="hr-btn" onclick="toast('Downloading attendance CSV...','s')">↓ Attendance (CSV)</button>
+            <button class="hr-btn" onclick="toast('Downloading task report...','s')">↓ Task completion (CSV)</button>
+            <button class="hr-btn" onclick="toast('Generating PDF...','s')">↓ Intern progress (PDF)</button>
+            <button class="hr-btn" onclick="toast('Downloading summary...','s')">↓ Application summary</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /hr-content -->
+  </div><!-- /hr-main -->
+</div><!-- /hr-app -->
+
+
+<!-- ════════════ MANAGER APP ════════════ -->
+<div id="mgr-app">
+  <div class="mgr-topbar">
+    <div class="mgr-brand">
+      <div class="mgr-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="white"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".5"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".5"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".25"/></svg></div>
+      <div class="mgr-brand-name">InternHub</div>
+      <div class="mgr-brand-role">Team Manager</div>
+    </div>
+    <div class="mgr-nav">
+      <button class="mgr-nav-item active" onclick="mgrNav('overview',this)"><svg viewBox="0 0 13 13" fill="currentColor"><rect x="1" y="1" width="4.5" height="4.5" rx=".8"/><rect x="7.5" y="1" width="4.5" height="4.5" rx=".8"/><rect x="1" y="7.5" width="4.5" height="4.5" rx=".8"/><rect x="7.5" y="7.5" width="4.5" height="4.5" rx=".8"/></svg>Overview</button>
+      <button class="mgr-nav-item" onclick="mgrNav('my-interns',this)"><svg viewBox="0 0 13 13" fill="currentColor"><circle cx="6.5" cy="4" r="2.5"/><path d="M1 12c0-3 2.5-5.5 5.5-5.5S12 9 12 12"/></svg>My interns</button>
+      <button class="mgr-nav-item" onclick="mgrNav('tasks',this)"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 4h9M2 6.5h9M2 9h5"/></svg>Tasks <span class="mgr-nbadge">2</span></button>
+      <button class="mgr-nav-item" onclick="mgrNav('attendance',this)"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="2" width="10" height="9" rx="1.5"/><path d="M4 1v2.5M9 1v2.5M1.5 5.5h10"/></svg>Attendance</button>
+    </div>
+    <div class="mgr-topbar-right">
+      <button class="mgr-btn pri" id="mgr-cta" onclick="openModal('mgr-modal')">+ Assign task</button>
+      <div class="mgr-user">
+        <div class="mgr-uav">TK</div>
+        <div class="mgr-uname">Tobi Kolade</div>
+      </div>
+      <button class="mgr-btn" onclick="logout()" style="color:#6b7280;padding:7px 10px">Sign out</button>
+    </div>
+  </div>
+  <div class="mgr-content">
+
+    <!-- MGR Overview -->
+    <div id="mgr-sec-overview" class="mgr-sec on">
+      <div class="mgr-header"><div class="mgr-htitle">Good morning, Tobi 👋</div><div class="mgr-hsub">Platform Engineering · 4 interns under your supervision</div></div>
+      <div class="mgr-metrics">
+        <div class="mgr-mc"><div class="mgr-mc-icon" style="background:#f0fdfa"><svg viewBox="0 0 16 16" fill="none" stroke="#0d9488" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div><div class="mgr-mc-lbl">My interns</div><div class="mgr-mc-val">4</div><div class="mgr-mc-sub">Platform Engineering</div></div>
+        <div class="mgr-mc"><div class="mgr-mc-icon" style="background:#fef9c3"><svg viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5"><path d="M3 5h10M3 8h10M3 11h6"/></svg></div><div class="mgr-mc-lbl">Overdue tasks</div><div class="mgr-mc-val">2</div><div class="mgr-mc-sub w">need attention</div></div>
+        <div class="mgr-mc"><div class="mgr-mc-icon" style="background:#f0fdfa"><svg viewBox="0 0 16 16" fill="none" stroke="#0d9488" stroke-width="1.5"><path d="M3 12l3-4 3 3 4-6"/></svg></div><div class="mgr-mc-lbl">Team avg progress</div><div class="mgr-mc-val">71%</div><div class="mgr-mc-sub g">above target</div></div>
+      </div>
+      <div class="mgr-g2">
+        <div class="mgr-card">
+          <div class="mgr-ch"><span class="mgr-ct">My interns</span><span class="mgr-ca" onclick="mgrNav('my-interns',document.querySelectorAll('.mgr-nav-item')[1])">View all →</span></div>
+          <div class="mgr-intern-row"><div class="mgr-intern-av at">CE</div><div style="flex:1"><div class="mgr-intern-name">Chidi Eze</div><div class="mgr-intern-meta">Backend Engineering</div></div><div class="mgr-intern-prog"><div class="pw" style="margin-bottom:3px"><div class="pb2 grn" style="width:82%"></div></div></div><div class="mgr-intern-pct">82%</div><span class="pill pg" style="margin-left:8px">On track</span></div>
+          <div class="mgr-intern-row"><div class="mgr-intern-av ab">IW</div><div style="flex:1"><div class="mgr-intern-name">Ibrahim Wale</div><div class="mgr-intern-meta">Frontend Engineering</div></div><div class="mgr-intern-prog"><div class="pw" style="margin-bottom:3px"><div class="pb2 amb" style="width:45%"></div></div></div><div class="mgr-intern-pct">45%</div><span class="pill pa" style="margin-left:8px">Behind</span></div>
+          <div class="mgr-intern-row"><div class="mgr-intern-av ap">RO</div><div style="flex:1"><div class="mgr-intern-name">Rahim Osei</div><div class="mgr-intern-meta">Data Engineering</div></div><div class="mgr-intern-prog"><div class="pw" style="margin-bottom:3px"><div class="pb2 grn" style="width:60%"></div></div></div><div class="mgr-intern-pct">60%</div><span class="pill pg" style="margin-left:8px">On track</span></div>
+          <div class="mgr-intern-row"><div class="mgr-intern-av aw">TA</div><div style="flex:1"><div class="mgr-intern-name">Temi Alade</div><div class="mgr-intern-meta">Data Engineering</div></div><div class="mgr-intern-prog"><div class="pw" style="margin-bottom:3px"><div class="pb2 grn" style="width:78%"></div></div></div><div class="mgr-intern-pct">78%</div><span class="pill pg" style="margin-left:8px">On track</span></div>
+        </div>
+        <div class="mgr-card">
+          <div class="mgr-ch"><span class="mgr-ct">Recent activity</span></div>
+          <div class="mgr-tl"><div class="mgr-tld" style="background:#16a34a"></div><div><div class="mgr-tlt">Chidi Eze submitted auth module for review.</div><div class="mgr-tls">3 hours ago</div></div></div>
+          <div class="mgr-tl"><div class="mgr-tld" style="background:#dc2626"></div><div><div class="mgr-tlt">Ibrahim Wale's dark mode task is 4 days overdue.</div><div class="mgr-tls">Today</div></div></div>
+          <div class="mgr-tl"><div class="mgr-tld" style="background:#d97706"></div><div><div class="mgr-tlt">Rahim Osei requested a 1:1 meeting.</div><div class="mgr-tls">Yesterday</div></div></div>
+          <div class="mgr-tl"><div class="mgr-tld" style="background:#0d9488"></div><div><div class="mgr-tlt">Temi Alade completed data pipeline report.</div><div class="mgr-tls">2 days ago</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MGR My Interns -->
+    <div id="mgr-sec-my-interns" class="mgr-sec">
+      <div class="mgr-header"><div class="mgr-htitle">My interns</div><div class="mgr-hsub">4 interns in Platform Engineering</div></div>
+      <div class="mgr-intern-row"><div class="mgr-intern-av at" style="width:48px;height:48px;font-size:15px">CE</div><div style="flex:1"><div class="mgr-intern-name" style="font-size:14px">Chidi Eze</div><div class="mgr-intern-meta">Backend Engineering · Jan 6 – Mar 28</div><div style="margin-top:6px"><span class="pill pg">On track</span>&nbsp;<span class="pill pb" style="margin-left:4px">2 tasks active</span></div></div><div style="width:160px"><div class="pw" style="margin-bottom:4px"><div class="pb2 grn" style="width:82%"></div></div><div style="font-size:11px;color:#6b7280;font-weight:600">82% complete</div></div><button class="mgr-btn" style="margin-left:14px" onclick="toast('Opening Chidi profile','')">View profile</button></div>
+      <div class="mgr-intern-row"><div class="mgr-intern-av ab" style="width:48px;height:48px;font-size:15px">IW</div><div style="flex:1"><div class="mgr-intern-name" style="font-size:14px">Ibrahim Wale</div><div class="mgr-intern-meta">Frontend Engineering · Jan 20 – May 2</div><div style="margin-top:6px"><span class="pill pa">Behind</span>&nbsp;<span class="pill pr" style="margin-left:4px">1 task overdue</span></div></div><div style="width:160px"><div class="pw" style="margin-bottom:4px"><div class="pb2 amb" style="width:45%"></div></div><div style="font-size:11px;color:#6b7280;font-weight:600">45% complete</div></div><button class="mgr-btn" style="margin-left:14px" onclick="toast('Opening Ibrahim profile','')">View profile</button></div>
+      <div class="mgr-intern-row"><div class="mgr-intern-av ap" style="width:48px;height:48px;font-size:15px">RO</div><div style="flex:1"><div class="mgr-intern-name" style="font-size:14px">Rahim Osei</div><div class="mgr-intern-meta">Data Engineering · Feb 10 – Apr 30</div><div style="margin-top:6px"><span class="pill pg">On track</span>&nbsp;<span class="pill pb" style="margin-left:4px">1 task active</span></div></div><div style="width:160px"><div class="pw" style="margin-bottom:4px"><div class="pb2 grn" style="width:60%"></div></div><div style="font-size:11px;color:#6b7280;font-weight:600">60% complete</div></div><button class="mgr-btn" style="margin-left:14px" onclick="toast('Opening Rahim profile','')">View profile</button></div>
+      <div class="mgr-intern-row"><div class="mgr-intern-av aw" style="width:48px;height:48px;font-size:15px">TA</div><div style="flex:1"><div class="mgr-intern-name" style="font-size:14px">Temi Alade</div><div class="mgr-intern-meta">Data Engineering · Feb 3 – Apr 11</div><div style="margin-top:6px"><span class="pill pg">On track</span>&nbsp;<span class="pill pg" style="margin-left:4px">All tasks done</span></div></div><div style="width:160px"><div class="pw" style="margin-bottom:4px"><div class="pb2 grn" style="width:78%"></div></div><div style="font-size:11px;color:#6b7280;font-weight:600">78% complete</div></div><button class="mgr-btn" style="margin-left:14px" onclick="toast('Opening Temi profile','')">View profile</button></div>
+    </div>
+
+    <!-- MGR Tasks -->
+    <div id="mgr-sec-tasks" class="mgr-sec">
+      <div class="mgr-header"><div class="mgr-htitle">Tasks</div><div class="mgr-hsub">Assigned to your interns</div></div>
+      <div class="mgr-card">
+        <div class="mgr-ch"><span class="mgr-ct">All team tasks</span><button class="mgr-btn pri" onclick="openModal('mgr-modal')">+ Assign task</button></div>
+        <div class="mgr-task-row"><div class="mgr-tck done"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 4.5l1.8 1.8 3.2-3.6" stroke="white" stroke-width="1.6"/></svg></div><div class="mgr-task-body"><div class="mgr-task-name done">Set up CI/CD pipeline</div><div class="mgr-task-meta"><div class="fr"><div class="av at" style="width:18px;height:18px;font-size:8px">CE</div>Chidi Eze</div><span>&middot; Backend Platform</span></div></div><div class="mgr-task-due ok">Done</div></div>
+        <div class="mgr-task-row"><div class="mgr-tck" onclick="mgrToggle(this)"></div><div class="mgr-task-body"><div class="mgr-task-name">Build REST API for auth module</div><div class="mgr-task-meta"><div class="fr"><div class="av at" style="width:18px;height:18px;font-size:8px">CE</div>Chidi Eze</div><span>&middot; Backend Platform</span></div></div><div class="mgr-task-due ok">Mar 22</div></div>
+        <div class="mgr-task-row"><div class="mgr-tck" onclick="mgrToggle(this)"></div><div class="mgr-task-body"><div class="mgr-task-name">Implement dark mode toggle</div><div class="mgr-task-meta"><div class="fr"><div class="av ab" style="width:18px;height:18px;font-size:8px">IW</div>Ibrahim Wale</div><span>&middot; Frontend</span></div></div><div class="mgr-task-due ov">4 days overdue</div></div>
+        <div class="mgr-task-row"><div class="mgr-tck" onclick="mgrToggle(this)"></div><div class="mgr-task-body"><div class="mgr-task-name">Data pipeline optimisation report</div><div class="mgr-task-meta"><div class="fr"><div class="av ap" style="width:18px;height:18px;font-size:8px">RO</div>Rahim Osei</div><span>&middot; Data Engineering</span></div></div><div class="mgr-task-due ok">Mar 28</div></div>
+        <div class="mgr-task-row"><div class="mgr-tck done"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 4.5l1.8 1.8 3.2-3.6" stroke="white" stroke-width="1.6"/></svg></div><div class="mgr-task-body"><div class="mgr-task-name done">Q1 data summary presentation</div><div class="mgr-task-meta"><div class="fr"><div class="av aw" style="width:18px;height:18px;font-size:8px">TA</div>Temi Alade</div><span>&middot; Data Engineering</span></div></div><div class="mgr-task-due ok">Done</div></div>
+      </div>
+    </div>
+
+    <!-- MGR Attendance -->
+    <div id="mgr-sec-attendance" class="mgr-sec">
+      <div class="mgr-header"><div class="mgr-htitle">Team attendance</div><div class="mgr-hsub">Your interns only — today, March 23, 2026</div></div>
+      <div class="mgr-metrics">
+        <div class="mgr-mc"><div class="mgr-mc-icon" style="background:#f0fdfa"><svg viewBox="0 0 16 16" fill="none" stroke="#0d9488" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div><div class="mgr-mc-lbl">Present today</div><div class="mgr-mc-val">3</div><div class="mgr-mc-sub">of 4</div></div>
+        <div class="mgr-mc"><div class="mgr-mc-icon" style="background:#fef9c3"><svg viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5"><path d="M8 5v4l3 3"/><circle cx="8" cy="8" r="6"/></svg></div><div class="mgr-mc-lbl">Late this week</div><div class="mgr-mc-val">1</div><div class="mgr-mc-sub w">Ibrahim Wale</div></div>
+        <div class="mgr-mc"><div class="mgr-mc-icon" style="background:#f0fdfa"><svg viewBox="0 0 16 16" fill="none" stroke="#0d9488" stroke-width="1.5"><path d="M3 12l3-4 3 3 4-6"/></svg></div><div class="mgr-mc-lbl">Team avg (Mar)</div><div class="mgr-mc-val">91%</div><div class="mgr-mc-sub g">excellent</div></div>
+      </div>
+      <div class="mgr-card">
+        <table class="mgr-table"><thead><tr><th>Intern</th><th>Check in</th><th>Check out</th><th>Hours</th><th>Status</th></tr></thead><tbody>
+          <tr><td><div class="fr"><div class="av at">CE</div>Chidi Eze</div></td><td>09:02</td><td>—</td><td style="color:#0d9488;font-weight:700">5h 30m ●</td><td><span class="pill pg">Present</span></td></tr>
+          <tr><td><div class="fr"><div class="av ab">IW</div>Ibrahim Wale</div></td><td>—</td><td>—</td><td style="color:#9ca3af">—</td><td><span class="pill pr">Absent</span></td></tr>
+          <tr><td><div class="fr"><div class="av ap">RO</div>Rahim Osei</div></td><td>09:10</td><td>—</td><td style="color:#0d9488;font-weight:700">5h 22m ●</td><td><span class="pill pg">Present</span></td></tr>
+          <tr><td><div class="fr"><div class="av aw">TA</div>Temi Alade</div></td><td>09:05</td><td>—</td><td style="color:#0d9488;font-weight:700">5h 27m ●</td><td><span class="pill pg">Present</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- INTERN ATTENDANCE -->
-<div id="sec-intern-attendance" class="sec">
-  <div class="card">
-    <div class="ch"><span class="ct">My attendance &mdash; March 2026</span><span class="pill pg">87% this month</span></div>
-    <div class="wstrip">
-      <div class="wchip"><div class="wcd">Mon</div><div class="wcn">16</div><div class="wcs wcp">Present</div></div>
-      <div class="wchip"><div class="wcd">Tue</div><div class="wcn">17</div><div class="wcs wcp">Present</div></div>
-      <div class="wchip today"><div class="wcd">Wed</div><div class="wcn">18</div><div class="wcs wcp">Today</div></div>
-      <div class="wchip"><div class="wcd">Thu</div><div class="wcn">19</div><div class="wcs wcf">&mdash;</div></div>
-      <div class="wchip"><div class="wcd">Fri</div><div class="wcn">20</div><div class="wcs wcf">&mdash;</div></div>
+<!-- ════════════ INTERN APP ════════════ -->
+<div id="int-app">
+  <div class="int-topbar">
+    <div class="int-brand">
+      <div class="int-mark"><svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="white"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".5"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".5"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".25"/></svg></div>
+      <div class="int-brand-name">InternHub</div>
     </div>
-    <table><thead><tr><th>Date</th><th>Check in</th><th>Check out</th><th>Hours</th><th>Status</th></tr></thead><tbody>
-      <tr><td class="m">Wed Mar 18</td><td>09:02</td><td>&mdash;</td><td>5h 30m (live)</td><td><span class="pill pg">Present</span></td></tr>
-      <tr><td class="m">Tue Mar 17</td><td>09:00</td><td>18:05</td><td>9h 05m</td><td><span class="pill pg">Present</span></td></tr>
-      <tr><td class="m">Mon Mar 16</td><td>09:15</td><td>18:00</td><td>8h 45m</td><td><span class="pill pg">Present</span></td></tr>
-      <tr><td class="m">Fri Mar 13</td><td>09:51</td><td>18:10</td><td>8h 19m</td><td><span class="pill pa">Late</span></td></tr>
-      <tr><td class="m">Thu Mar 12</td><td>08:55</td><td>18:00</td><td>9h 05m</td><td><span class="pill pg">Present</span></td></tr>
-    </tbody></table>
+    <div class="int-tabs">
+      <button class="int-tab active" onclick="intTab('home',this)">Home</button>
+      <button class="int-tab" onclick="intTab('tasks',this)">Tasks</button>
+      <button class="int-tab" onclick="intTab('attendance',this)">Attendance</button>
+      <button class="int-tab" onclick="intTab('onboarding',this)">Onboarding</button>
+    </div>
+    <button class="int-logout" onclick="logout()">Sign out</button>
+  </div>
+  <div class="int-content">
+
+    <!-- INTERN Home -->
+    <div id="int-sec-home" class="int-sec on">
+      <div class="int-hero">
+        <div class="int-hero-greeting">Monday, March 23</div>
+        <div class="int-hero-name">Hey, Chidi! 👋</div>
+        <div class="int-hero-sub">Backend Engineering · Platform team · Manager: Tobi Kolade</div>
+        <div class="int-hero-stats">
+          <div class="int-hero-stat"><div class="int-hero-stat-val">82%</div><div class="int-hero-stat-lbl">My progress</div></div>
+          <div class="int-hero-stat"><div class="int-hero-stat-val">4</div><div class="int-hero-stat-lbl">Tasks left</div></div>
+          <div class="int-hero-stat"><div class="int-hero-stat-val">10</div><div class="int-hero-stat-lbl">Days left</div></div>
+        </div>
+      </div>
+      <div class="int-body">
+        <div class="int-prog-card">
+          <div class="int-prog-header"><span class="int-prog-label">Internship progress</span><span class="int-prog-pct">82%</span></div>
+          <div class="int-prog-bar"><div class="int-prog-fill" style="width:82%"></div></div>
+          <div class="int-prog-sub">Jan 6, 2026 → Mar 28, 2026 · 10 days remaining</div>
+        </div>
+        <div class="int-section-title">Up next <span class="int-section-link" onclick="intTab('tasks',document.querySelectorAll('.int-tab')[1])">All tasks →</span></div>
+        <div class="int-card">
+          <div class="int-task-item"><div class="int-tck" onclick="intToggle(this)"></div><span class="int-task-text">Build REST API for auth module</span><span class="int-task-due soon">Due Mar 22</span></div>
+          <div class="int-task-item"><div class="int-tck" onclick="intToggle(this)"></div><span class="int-task-text">Write API documentation</span><span class="int-task-due ok">Mar 26</span></div>
+          <div class="int-task-item"><div class="int-tck" onclick="intToggle(this)"></div><span class="int-task-text">Final project presentation</span><span class="int-task-due ok">Mar 27</span></div>
+        </div>
+        <div class="int-section-title" style="margin-top:4px">This week</div>
+        <div class="int-att-strip">
+          <div class="int-att-chip p"><div class="int-att-d">Mon</div><div class="int-att-n">16</div><div class="int-att-s p">✓</div></div>
+          <div class="int-att-chip p"><div class="int-att-d">Tue</div><div class="int-att-n">17</div><div class="int-att-s p">✓</div></div>
+          <div class="int-att-chip today"><div class="int-att-d">Wed</div><div class="int-att-n">18</div><div class="int-att-s t">Now</div></div>
+          <div class="int-att-chip"><div class="int-att-d">Thu</div><div class="int-att-n">19</div><div class="int-att-s f">—</div></div>
+          <div class="int-att-chip"><div class="int-att-d">Fri</div><div class="int-att-n">20</div><div class="int-att-s f">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERN Tasks -->
+    <div id="int-sec-tasks" class="int-sec">
+      <div class="int-hero" style="padding:22px 24px 24px">
+        <div class="int-hero-greeting">Tasks</div>
+        <div class="int-hero-name" style="font-size:20px">2 of 6 complete</div>
+        <div class="int-prog-bar" style="margin-top:14px;height:6px;background:rgba(255,255,255,.2)"><div style="height:6px;border-radius:999px;background:#fff;width:33%;transition:width .6s ease"></div></div>
+      </div>
+      <div class="int-body">
+        <div class="int-card">
+          <div class="int-task-item"><div class="int-tck done"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 4.5l1.8 1.8 3.2-3.6" stroke="white" stroke-width="1.6"/></svg></div><span class="int-task-text done">Set up local dev environment</span><span class="int-task-due done">Done ✓</span></div>
+          <div class="int-task-item"><div class="int-tck done"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 4.5l1.8 1.8 3.2-3.6" stroke="white" stroke-width="1.6"/></svg></div><span class="int-task-text done">Write unit tests for login module</span><span class="int-task-due done">Done ✓</span></div>
+          <div class="int-task-item"><div class="int-tck" onclick="intToggle(this)"></div><span class="int-task-text">Build REST API for auth module</span><span class="int-task-due ov">Due Mar 22</span></div>
+          <div class="int-task-item"><div class="int-tck" onclick="intToggle(this)"></div><span class="int-task-text">Write API documentation</span><span class="int-task-due ok">Mar 26</span></div>
+          <div class="int-task-item"><div class="int-tck" onclick="intToggle(this)"></div><span class="int-task-text">Final project presentation</span><span class="int-task-due ok">Mar 27</span></div>
+          <div class="int-task-item"><div class="int-tck" onclick="intToggle(this)"></div><span class="int-task-text">Submit end-of-internship report</span><span class="int-task-due ok">Mar 28</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERN Attendance -->
+    <div id="int-sec-attendance" class="int-sec">
+      <div class="int-hero" style="padding:22px 24px 24px">
+        <div class="int-hero-greeting">Attendance — March 2026</div>
+        <div class="int-hero-name" style="font-size:20px">87% this month</div>
+        <div class="int-hero-sub">16 present · 1 late · 1 absent</div>
+      </div>
+      <div class="int-body">
+        <div class="int-section-title">This week</div>
+        <div class="int-att-strip">
+          <div class="int-att-chip p"><div class="int-att-d">Mon</div><div class="int-att-n">16</div><div class="int-att-s p">Present</div></div>
+          <div class="int-att-chip p"><div class="int-att-d">Tue</div><div class="int-att-n">17</div><div class="int-att-s p">Present</div></div>
+          <div class="int-att-chip today"><div class="int-att-d">Wed</div><div class="int-att-n">18</div><div class="int-att-s t">Today</div></div>
+          <div class="int-att-chip"><div class="int-att-d">Thu</div><div class="int-att-n">19</div><div class="int-att-s f">—</div></div>
+          <div class="int-att-chip"><div class="int-att-d">Fri</div><div class="int-att-n">20</div><div class="int-att-s f">—</div></div>
+        </div>
+        <div class="int-card">
+          <div class="int-att-row"><div class="int-att-date">Wed Mar 18</div><div class="int-att-time">09:02 → live</div><div class="int-att-hrs">5h 30m</div><span class="pill pg">Present</span></div>
+          <div class="int-att-row"><div class="int-att-date">Tue Mar 17</div><div class="int-att-time">09:00 → 18:05</div><div class="int-att-hrs">9h 05m</div><span class="pill pg">Present</span></div>
+          <div class="int-att-row"><div class="int-att-date">Mon Mar 16</div><div class="int-att-time">09:15 → 18:00</div><div class="int-att-hrs">8h 45m</div><span class="pill pg">Present</span></div>
+          <div class="int-att-row"><div class="int-att-date">Fri Mar 13</div><div class="int-att-time">09:51 → 18:10</div><div class="int-att-hrs">8h 19m</div><span class="pill pa">Late</span></div>
+          <div class="int-att-row"><div class="int-att-date">Thu Mar 12</div><div class="int-att-time">08:55 → 18:00</div><div class="int-att-hrs">9h 05m</div><span class="pill pg">Present</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERN Onboarding -->
+    <div id="int-sec-onboarding" class="int-sec">
+      <div class="int-hero" style="padding:22px 24px 24px">
+        <div class="int-hero-greeting">Onboarding</div>
+        <div class="int-hero-name" style="font-size:20px">Almost done — 4 of 5 steps!</div>
+        <div class="int-prog-bar" style="margin-top:14px;height:6px;background:rgba(255,255,255,.2)"><div style="height:6px;border-radius:999px;background:#fff;width:80%;transition:width .6s ease"></div></div>
+      </div>
+      <div class="int-body">
+        <div class="int-card">
+          <div class="int-onb-steps">
+            <div class="int-onb-step done"><div class="int-onb-num">✓</div><div><div class="int-onb-title">Sign offer letter</div><div class="int-onb-sub">Completed Jan 3, 2026</div></div></div>
+            <div class="int-onb-step done"><div class="int-onb-num">✓</div><div><div class="int-onb-title">Submit ID documents</div><div class="int-onb-sub">Completed Jan 4, 2026</div></div></div>
+            <div class="int-onb-step done"><div class="int-onb-num">✓</div><div><div class="int-onb-title">Complete IT setup</div><div class="int-onb-sub">Laptop, email, repo access — done</div></div></div>
+            <div class="int-onb-step done"><div class="int-onb-num">✓</div><div><div class="int-onb-title">Attend orientation</div><div class="int-onb-sub">Completed Jan 6, 2026</div></div></div>
+            <div class="int-onb-step active"><div class="int-onb-num">5</div><div><div class="int-onb-title">Complete code review training</div><div class="int-onb-sub">Read the internal guidelines and pass the quiz · ~45 mins</div><div style="display:flex;gap:8px;margin-top:10px"><button class="int-btn sec" onclick="toast('Opening training module','')">Start training →</button><button class="int-btn pri" onclick="toast('Step complete! 🎉 You are fully onboarded!','s')">Mark complete</button></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- INTERN ONBOARDING -->
-<div id="sec-intern-onboarding" class="sec">
-  <div class="card">
-    <div class="ch"><span class="ct">My onboarding</span><span class="pill pg">4 of 5 complete</span></div>
-    <div class="onb">
-      <div class="onb-step done"><div class="onb-c">&#10003;</div><div class="onb-l">Offer signed</div></div>
-      <div class="onb-step done"><div class="onb-c">&#10003;</div><div class="onb-l">Documents</div></div>
-      <div class="onb-step done"><div class="onb-c">&#10003;</div><div class="onb-l">IT setup</div></div>
-      <div class="onb-step done"><div class="onb-c">&#10003;</div><div class="onb-l">Orientation</div></div>
-      <div class="onb-step active"><div class="onb-c">5</div><div class="onb-l">Code review</div></div>
-    </div>
-    <div class="card" style="background:#f4f4f2;box-shadow:none;border-color:#e5e5e2">
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px">Current: Code review training</div>
-      <p style="font-size:12px;color:#6b6b68;line-height:1.7;margin-bottom:12px">Complete the internal code review guidelines module and pass the short quiz. This ensures you can participate in team PRs from your first week.</p>
-      <button class="bsub">Mark as complete</button>
-    </div>
+</div><!-- /app -->
+
+<!-- ══ MODALS ══ -->
+<div class="modal-ov" id="hr-modal" onclick="if(event.target===this)closeModal('hr-modal')">
+  <div class="modal-box">
+    <div class="modal-hdr"><div class="modal-title">New application</div><button class="modal-x" onclick="closeModal('hr-modal')">&times;</button></div>
+    <div class="frow"><div class="fg"><label class="fl">First name</label><input class="fi" type="text" placeholder="e.g. Amara"></div><div class="fg"><label class="fl">Last name</label><input class="fi" type="text" placeholder="e.g. Okafor"></div></div>
+    <div class="fg"><label class="fl">Email address</label><input class="fi" type="email" placeholder="applicant@email.com"></div>
+    <div class="frow"><div class="fg"><label class="fl">Role</label><select class="fi"><option>Software Eng. Intern</option><option>UX Design Intern</option><option>Data Analyst Intern</option><option>Marketing Intern</option></select></div><div class="fg"><label class="fl">Department</label><select class="fi"><option>Engineering</option><option>Design</option><option>Data</option><option>Marketing</option></select></div></div>
+    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" placeholder="Any notes..."></textarea></div>
+    <div class="modal-ftr"><button class="bcancel" onclick="closeModal('hr-modal')">Cancel</button><button class="bsub" onclick="closeModal('hr-modal');toast('Application submitted!','s')">Submit</button></div>
   </div>
 </div>
 
+<div class="modal-ov" id="mgr-modal" onclick="if(event.target===this)closeModal('mgr-modal')">
+  <div class="modal-box">
+    <div class="modal-hdr"><div class="modal-title">Assign task</div><button class="modal-x" onclick="closeModal('mgr-modal')">&times;</button></div>
+    <div class="fg"><label class="fl">Task title</label><input class="fi" type="text" placeholder="e.g. Write unit tests for payment module"></div>
+    <div class="frow"><div class="fg"><label class="fl">Assign to</label><select class="fi"><option>Chidi Eze</option><option>Ibrahim Wale</option><option>Rahim Osei</option><option>Temi Alade</option></select></div><div class="fg"><label class="fl">Due date</label><input class="fi" type="date"></div></div>
+    <div class="frow"><div class="fg"><label class="fl">Priority</label><select class="fi"><option>High</option><option>Medium</option><option>Low</option></select></div><div class="fg"><label class="fl">Project</label><input class="fi" type="text" placeholder="e.g. Backend Platform"></div></div>
+    <div class="fg"><label class="fl">Description</label><textarea class="fi" placeholder="What needs to be done..."></textarea></div>
+    <div class="modal-ftr"><button class="bcancel" onclick="closeModal('mgr-modal')">Cancel</button><button class="bsub teal" onclick="closeModal('mgr-modal');toast('Task assigned!','s')">Assign task</button></div>
+  </div>
 </div>
-</div>
+
+<div id="toast"></div>
 
 <script>
-const titles={dashboard:"Dashboard",applications:"Applications",pipeline:"Hiring pipeline",interns:"Intern profiles",onboarding:"Onboarding",attendance:"Attendance",tasks:"Tasks & projects","intern-home":"My portal","intern-tasks":"My tasks","intern-attendance":"My attendance","intern-onboarding":"My onboarding"};
-const ctas={hr:"+ New application",manager:"+ Assign task",intern:"+ Log time"};
-let role="hr";
-function goTo(p,el){
-  document.querySelectorAll(".sec").forEach(s=>s.classList.remove("on"));
-  var s=document.getElementById("sec-"+p);
-  if(s)s.classList.add("on");
-  document.getElementById("page-title").textContent=titles[p]||p;
-  var n=document.getElementById("nav-"+role);
-  if(n)n.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active"));
-  if(el)el.classList.add("active");
+let selectedRole=null;
+function selectRole(r,btn){
+  selectedRole=r;
+  document.querySelectorAll('.login-role-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const lb=document.getElementById('login-btn');
+  lb.disabled=false;
+  lb.textContent='Continue as '+(r==='hr'?'HR Admin':r==='manager'?'Team Manager':'Intern')+' →';
 }
-function switchRole(r,t){
-  role=r;
-  document.querySelectorAll(".role-tab").forEach(x=>x.classList.remove("active"));
-  t.classList.add("active");
-  ["hr","manager","intern"].forEach(x=>{
-    var n=document.getElementById("nav-"+x);
-    var su=document.getElementById("su-"+x);
-    if(n)n.style.display=x===r?"":"none";
-    if(su)su.style.display=x===r?"":"none";
-  });
-  document.getElementById("cta-btn").textContent=ctas[r];
-  var fp={hr:"dashboard",manager:"dashboard",intern:"intern-home"};
-  var nav=document.getElementById("nav-"+r);
-  if(nav){nav.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active"));var fi=nav.querySelector(".nav-item");if(fi)fi.classList.add("active");}
-  goTo(fp[r],null);
+function doLogin(){
+  if(!selectedRole)return;
+  document.getElementById('login-screen').classList.add('hide');
+  setTimeout(()=>{
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    document.getElementById('app').classList.add('show');
+    document.getElementById('hr-app').style.display='none';
+    document.getElementById('mgr-app').style.display='none';
+    document.getElementById('int-app').style.display='none';
+    if(selectedRole==='hr'){document.getElementById('hr-app').style.display='flex';document.getElementById('hr-app').classList.add('show');}
+    else if(selectedRole==='manager'){document.getElementById('mgr-app').style.display='flex';document.getElementById('mgr-app').classList.add('show');}
+    else{document.getElementById('int-app').style.display='flex';document.getElementById('int-app').classList.add('show');}
+    toast('Welcome back! You are signed in as '+(selectedRole==='hr'?'HR Admin':selectedRole==='manager'?'Team Manager':'Chidi Eze'),'s');
+  },350);
 }
-document.querySelectorAll(".flt").forEach(b=>{
-  b.addEventListener("click",function(){
-    this.closest(".srow").querySelectorAll(".flt").forEach(x=>x.classList.remove("on"));
-    this.classList.add("on");
-  });
-});
+function logout(){
+  ['hr-app','mgr-app','int-app'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.classList.remove('show');});
+  document.getElementById('app').style.display='none';
+  const ls=document.getElementById('login-screen');
+  ls.style.display='flex';ls.classList.remove('hide');
+  document.querySelectorAll('.login-role-btn').forEach(b=>b.classList.remove('selected'));
+  const lb=document.getElementById('login-btn');lb.disabled=true;lb.textContent='Select a role to continue';
+  selectedRole=null;
+}
+
+// HR nav
+const hrTitles={dashboard:'Dashboard',applications:'Applications',pipeline:'Hiring pipeline',interns:'All interns',onboarding:'Onboarding',attendance:'Attendance',reports:'Reports & analytics'};
+function hrNav(p,el){
+  document.querySelectorAll('.hr-sec').forEach(s=>s.classList.remove('on'));
+  const s=document.getElementById('hr-sec-'+p);if(s)s.classList.add('on');
+  document.getElementById('hr-page-title').textContent=hrTitles[p]||p;
+  document.querySelectorAll('#nav-hr-items .hr-nav-item,.hr-sidebar .hr-nav-item').forEach(i=>i.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const ctaMap={applications:'+ New application',interns:'+ Add intern',onboarding:'+ Start onboarding'};
+  document.getElementById('hr-cta').textContent=ctaMap[p]||'+ New application';
+}
+// MGR nav
+function mgrNav(p,el){
+  document.querySelectorAll('.mgr-sec').forEach(s=>s.classList.remove('on'));
+  const s=document.getElementById('mgr-sec-'+p);if(s)s.classList.add('on');
+  document.querySelectorAll('.mgr-nav-item').forEach(i=>i.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+// INT tabs
+function intTab(p,el){
+  document.querySelectorAll('.int-sec').forEach(s=>s.classList.remove('on'));
+  const s=document.getElementById('int-sec-'+p);if(s)s.classList.add('on');
+  document.querySelectorAll('.int-tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+
+function fltBtn(btn){btn.closest('.hr-srow').querySelectorAll('.hr-flt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+function filterTbl(inp,id){const q=inp.value.toLowerCase();document.querySelectorAll('#'+id+' tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});}
+function filterCards(inp,id){const q=inp.value.toLowerCase();document.querySelectorAll('#'+id+' .icard').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none';});}
+function mgrToggle(tck){
+  const row=tck.closest('.mgr-task-row');
+  const name=row.querySelector('.mgr-task-name');
+  const due=row.querySelector('.mgr-task-due');
+  const done=tck.classList.toggle('done');
+  if(done){tck.innerHTML='<svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 4.5l1.8 1.8 3.2-3.6" stroke="white" stroke-width="1.6"/></svg>';name.classList.add('done');due.className='mgr-task-due ok';due.textContent='Done';toast('Task marked complete!','s');}
+  else{tck.innerHTML='';name.classList.remove('done');due.className='mgr-task-due ok';due.textContent='Pending';}
+}
+function intToggle(tck){
+  const row=tck.closest('.int-task-item');
+  const name=row.querySelector('.int-task-text');
+  const due=row.querySelector('.int-task-due');
+  const done=tck.classList.toggle('done');
+  if(done){tck.innerHTML='<svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 4.5l1.8 1.8 3.2-3.6" stroke="white" stroke-width="1.6"/></svg>';name.classList.add('done');due.className='int-task-due done';due.textContent='Done ✓';toast('Task done! Keep it up 💪','s');}
+  else{tck.innerHTML='';name.classList.remove('done');}
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function toast(msg,type){
+  const c=document.getElementById('toast');
+  const el=document.createElement('div');
+  el.className='toast-item'+(type==='s'?' s':type==='w'?' w':'');
+  el.innerHTML=(type==='s'?'✓ ':type==='w'?'⚠ ':'ℹ ')+msg;
+  c.appendChild(el);
+  setTimeout(()=>{el.style.transition='all .3s ease';el.style.opacity='0';el.style.transform='translateX(20px)';setTimeout(()=>el.remove(),300);},3000);
+}
 </script>
 </body>
 </html>
